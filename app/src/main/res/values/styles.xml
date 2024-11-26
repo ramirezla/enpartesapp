@@ -1,0 +1,94 @@
+<resources>
+
+    <!-- Base application theme. -->
+<!--    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        &lt;!&ndash; Customize your theme here. &ndash;&gt;
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>-->
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="MyMaterialTheme" parent="MyMaterialTheme.Base">
+
+    </style>
+
+    <style name="MyMaterialTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="CustomDialog" parent="@android:style/Theme.Dialog">
+
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:background">@drawable/logo_en_partes_h0</item>
+        <item name="android:windowBackground">@color/accentColor</item>
+        <item name="android:windowFrame">@color/azultransparente</item>
+    </style>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <!--
+   Custom ProgressBar themes.  See
+      http://stackoverflow.com/questions/12316365/showing-a-holo-themed-activity-circle
+   Custom definitions may be necessary to keep progress bars from defaulting to older non-holo
+   themes on new devices.  To see various options, go to
+      http://developer.android.com/reference/android/R.style.html
+   and search on "ProgressBar" in the webpage.
+   -->
+
+    <style name="ProgressBar.Horizontal.Indeterminate" parent="@android:style/Widget.Holo.Light.ProgressBar.Horizontal">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:indeterminate">true</item>
+    </style>
+
+    <style name="ProgressBar.Spinner.Indeterminate.Small" parent="@android:style/Widget.Holo.Light.ProgressBar.Small">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:indeterminate">true</item>
+    </style>
+
+    <style name="ProgressBar.Spinner.Indeterminate.Large" parent="@android:style/Widget.Holo.Light.ProgressBar.Large">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:indeterminate">true</item>
+    </style>
+
+    <style name="ProgressBar.Horizontal.Bar" parent="@android:style/Widget.Holo.Light.ProgressBar.Horizontal">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:indeterminate">false</item>
+    </style>
+
+    <!--A material design style for indeterminate spinner-->
+    <style name="indeterminateMaterialProgress" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+</resources>
+
+<!--<style name="CustomDialog" parent="@android:style/Theme.Dialog">
+<item name="android:background">@color/colorPrimaryDark</item>
+<item name="android:textColor">#FFFFFF</item>
+<item name="android:background">@drawable/logo_en_partes_h1</item>
+<item name="android:windowBackground">@null</item>
+<item name="android:windowFrame">@null</item>
+</style>-->

@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">enpartesapp</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Usuario</string>
+    <string name="nav_header_subtitle">laenpartes@gmail.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Configuración</string>
+
+    <string name="menu_grupo_cosultas">Consultas</string>
+    <string name="menu_consultas_abiertas">Consultas Abiertas</string>
+    <string name="menu_grupo_solicitudes">Solicitudes</string>
+    <string name="menu_solicitudes_abiertas">Solicitudes Abiertas</string>
+    <string name="menu_grupo_piezas">Piezas</string>
+    <string name="menu_piezas_abiertas">Piezas Abiertas</string>
+    <string name="menu_piezas_por_entregar">Piezas por Entregar</string>
+
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Iniciar sesión</string>
+    <string name="action_sign_in_short">Iniciar</string>
+    <string name="welcome">"Bienvenido !"</string>
+    <string name="invalid_username">No tiene una cuenta válida</string>
+    <string name="invalid_password">La clave debe ser mayor a 5 caracteres</string>
+    <string name="login_failed">"Error de acceso"</string>
+    <string name="no_tiene_cuenta">"No tiene cuenta? Registrate"</string>
+    <string name="descripcion_logo_enpartes">"Logo de enpartes"</string>
+    <string name="valor_en_verde">"542.5"</string>
+    <string name="cuenta_usuario_item">Cuenta</string>
+    <string name="salir_item">Salir</string>
+    <string name="mensaje_salir">¿Esta seguro que desea salir?</string>
+
+</resources>
