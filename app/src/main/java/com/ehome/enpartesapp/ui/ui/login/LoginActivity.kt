@@ -2,12 +2,15 @@ package com.ehome.enpartesapp.ui.ui.login
 
 /*
  * @autho Luis Alberto Ramirez Guerrero
- * @versión V2 - 29 Febrero 2018
+ * @versión V1 - 01 Noviembre 2024
  * @since 21
  *
  * Activity Principal,
- * Primera pantalla que se le muestra al usuario, en ésta pantalla
- * se le pedirá al usuario que ingrese su usuario (email) y su clave (password).
+ * Primera pantalla que se le muestra al usuario, se muestra:
+ * 1.- Colocar el usuario (correo)
+ * 2.- Se pide el password (clave debe ser mayor a 5 caracteres)
+ * 3.- Se envia via URL a integración para verificar si existe el usuario y es valido el password
+ * 4.- Retorna si es un usario valido y correcto el password.
  *
  */
 
@@ -113,7 +116,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome = getString(R.string.welcome)
+//        val welcome = getString(R.string.welcome)
         val editTextPassword = binding.password
         val passwordUsuario: String = editTextPassword.text.toString()
         val editTextUsername = binding.username

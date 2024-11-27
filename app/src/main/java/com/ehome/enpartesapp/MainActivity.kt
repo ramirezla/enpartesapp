@@ -2,6 +2,9 @@ package com.ehome.enpartesapp
 
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -23,17 +26,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val b = intent.extras
-        checkNotNull(b)
-        ident = b.getString("IDENT")
-        title = null
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        //setSupportActionBar(binding.appBarMain)
-        //binding.appBarMain. = "My Awesome App"
-        //val headerView = binding.nav_header.root
 
         setSupportActionBar(binding.appBarMain.toolbar)
         binding.appBarMain.fab.setOnClickListener { view ->
@@ -41,18 +35,52 @@ class MainActivity : AppCompatActivity() {
                 .setAction("Action", null)
                 .setAnchorView(R.id.fab).show()
         }
+
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+        // Pasando cada ID de menú como un conjunto de ID porque cada
+        // opcion del menú debe considerarse como destino de nivel superior.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_consultas_abiertas, R.id.nav_solicitudes_abiertas, R.id.nav_piezas_abiertas, R.id.nav_piezas_por_entregar, R.id.nav_salir
+                R.id.nav_consultas_abiertas, R.id.nav_solicitudes_abiertas, R.id.nav_piezas_abiertas, R.id.nav_piezas_por_entregar, R.id.exitMenuItem
             ), drawerLayout
         )
+
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        // Boton de salida
+        val navigationView: NavigationView = findViewById(R.id.nav_view)
+        val menu: Menu = navigationView.menu
+        val exitMenuItem: MenuItem = menu.findItem(R.id.exitMenuItem)
+        exitMenuItem.setOnMenuItemClickListener {
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Confirmar salir")
+                .setMessage("¿Esta seguro que desea salir?")
+                .setPositiveButton("Si") { _, _ ->
+                    super.onBackPressed() // Exit the app
+                    finish()
+                }
+                .setNegativeButton("No") { dialog, _ ->
+                    dialog.dismiss() // Dismiss the dialog
+                    /**
+                     * Se cancela la salida.
+                     *  y no se hace nada.
+                     */
+                }
+                .show()
+            true}
+
+        // Se recibe el valor del id del usuario permitido en IDENT.
+        val b = intent.extras
+        checkNotNull(b)
+        ident = b.getString("IDENT")
+        title = null
+        // Se coloca el usuario en el navegador del menu
+        val headerView: View = navigationView.getHeaderView(0) // 0 is the index of the header
+        val usernameTextView: TextView = headerView.findViewById(R.id.username)
+        usernameTextView.text = ident
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
