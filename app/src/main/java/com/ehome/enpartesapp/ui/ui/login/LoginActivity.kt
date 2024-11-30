@@ -15,6 +15,7 @@ package com.ehome.enpartesapp.ui.ui.login
  */
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -23,13 +24,20 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ehome.enpartesapp.MainActivity
-import com.ehome.enpartesapp.R
 import com.ehome.enpartesapp.databinding.ActivityLoginBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Query
 
 @Suppress("SpellCheckingInspection")
 class LoginActivity : AppCompatActivity() {
@@ -113,19 +121,81 @@ class LoginActivity : AppCompatActivity() {
                 loginViewModel.login(username.text.toString(), password.text.toString())
             }
         }
+
+        // Controlando si presiona retroceder para salir de la aplicacion
+        val onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val builder = AlertDialog.Builder(this@LoginActivity)
+                builder.setTitle("Confirmar salir")
+                    .setMessage("¿Esta seguro que desea salir?")
+                    .setPositiveButton("Si") { _, _ ->
+                        if (isTaskRoot) {finishAffinity()
+                        } else {
+                            finish()
+                        }
+                    }
+                    .setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+    }
+
+    // Define el modelo de datos para la respuesta
+    data class AuthResponse(
+        val authorization: Boolean,
+        val message: String
+    )
+    // Crea la interfaz de la API
+    interface AuthService {
+        @GET("api/integracion")
+        fun login(@Query("q") query: String): Call<AuthResponse>
+    }
+    // Configura Retrofit
+    val retrofit = Retrofit.Builder()
+        .baseUrl("https://enpartes.com/") // Reemplaza con tu URL base
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    val authService = retrofit.create(AuthService::class.java)
+    //  Realiza la solicitud de autenticación
+    fun authenticateUser(username: String, password: String) {
+        val query = "{\"action\":\"VERIFYLOGIN\",\"userCode\":\"$username\",\"cKey\":\"$password\"}"
+        val call = authService.login(query)
+
+        call.enqueue(object : Callback<AuthResponse> {
+            override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
+                if (response.isSuccessful) {
+                    val authResponse = response.body()
+                    if (authResponse != null && authResponse.authorization) {
+                        // Autorización exitosa
+                        println("Acceso autorizado: ${authResponse.message}")
+                    } else {
+                        // Autorización denegada
+                        println("Acceso denegado: ${authResponse?.message ?: "Error desconocido"}")
+                    }
+                } else {
+                    // Error en la respuesta
+                    println("Error en la respuesta del servidor: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
+                // Error en la solicitud
+                println("Error en la solicitud: ${t.message}")
+            }
+        })
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
-//        val welcome = getString(R.string.welcome)
         val editTextPassword = binding.password
         val passwordUsuario: String = editTextPassword.text.toString()
         val editTextUsername = binding.username
         val nombreUsuario = editTextUsername.text.toString()
 
         // TODO : initiate successful logged in experience
-        // Servidor gratis para trucking
         // TODO: Encrytando el url
-        // val encodedCiphertext = Base64.encodeToString(ciphertext, Base64.DEFAULT)
         // val url = "https://tu-url-de-integracion?cuenta=${cuenta}&password=${encodedCiphertext}"
         // val url = "http://ec2-3-134-95-99.us-east-2.compute.amazonaws.com/api/integracion?q={\"action\":\"VERIFYLOGIN\",\"userCode\":\"$nombreUsuario\",\"cKey\":\"$passwordUsuario\"}"
 
@@ -133,12 +203,19 @@ class LoginActivity : AppCompatActivity() {
         if (isOnlineNet()) {
             // TODO: Verificar la cuenta y el password del usuario
             // si esta todo bien
+            // authenticateUser(nombreUsuario, passwordUsuario)
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("IDENT", nombreUsuario)
-            startActivity(intent)
 
-            //Complete and destroy login activity once successful
-            finish() // Opcional: cierra LoginActivity
+            startActivity(intent)
+//            if (ObtenerAcceso()) {
+//                val intent = Intent(this, MainActivity::class.java)
+//                intent.putExtra("IDENT", nombreUsuario)
+//                startActivity(intent)
+//
+//                //Complete and destroy login activity once successful
+//                finish() // Opcional: cierra LoginActivity
+//            }
         } else {
             /**
              * Error de conexion de internet...
@@ -161,6 +238,7 @@ class LoginActivity : AppCompatActivity() {
     private fun isOnlineNet(): Boolean {
         try {
             val p = Runtime.getRuntime().exec("ping -c 1 www.google.es")
+            //val p = Runtime.getRuntime().exec("ping -c 1 www.aws.com")
 
             val `val` = p.waitFor()
             val reachable = (`val` == 0)
@@ -173,6 +251,40 @@ class LoginActivity : AppCompatActivity() {
 
     private fun showLoginFailed(@StringRes errorString: Int) {
         Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun ObtenerAcceso(): Boolean{
+//        val sh: HttpHandler = HttpHandler()
+//        title = null
+//        val editTextPassword = binding.password
+//        val passwordUsuario: String = editTextPassword.text.toString()
+//        val editTextUsername = binding.username
+//        val nombreUsuario = editTextUsername.text.toString()
+//        val url = "http://192.168.0.105/api/integracion?q={\"action\":\"VERIFYLOGIN\",\"userCode\":\"$nombreUsuario\",\"cKey\":\"$passwordUsuario\"}"
+
+
+        // Verificando si se tiene conexion a internet
+        if (isOnlineNet()) {
+            val editTextUsername = binding.username
+            val editTextPassword = binding.password
+            val passwordUsuario: String = editTextPassword.text.toString()
+            val nombreUsuario = editTextUsername.text.toString()
+            // val url = "http://192.168.0.105/api/integracion?q={\"action\":\"VERIFYLOGIN\",\"userCode\":\"$nombreUsuario\",\"cKey\":\"$passwordUsuario\"}"
+
+            // TODO: Verificar la cuenta y el password del usuario
+            // Making a request to url and getting response
+            // val jsonStr:String = sh.makeServiceCall(url)
+
+            // authenticateUser(nombreUsuario, passwordUsuario)
+
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("IDENT", nombreUsuario)
+            startActivity(intent)
+
+            //Complete and destroy login activity once successful
+            finish() // Opcional: cierra LoginActivity
+        }
+        return true
     }
 }
 
@@ -190,3 +302,4 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
     })
 }
+// http://ec2-18-218-84-221.us-east-2.compute.amazonaws.com/api/integracion?q={"action" : "VERIFYLOGIN","userCode" : "BBVACOL1","cKey" : "12345"}

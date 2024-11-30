@@ -52,7 +52,7 @@
             android:layout_weight="1"
             android:autofillHints="@string/prompt_email"
             android:hint="@string/prompt_email"
-            android:inputType="textEmailAddress"
+            android:inputType="text"
             android:linksClickable="false"
             android:maxLength="30"
             android:selectAllOnFocus="true"

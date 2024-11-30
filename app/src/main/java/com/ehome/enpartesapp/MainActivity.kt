@@ -1,10 +1,12 @@
 package com.ehome.enpartesapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
@@ -14,8 +16,10 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.ehome.enpartesapp.databinding.ActivityMainBinding
+import com.ehome.enpartesapp.ui.ui.login.LoginActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
 
@@ -55,19 +59,17 @@ class MainActivity : AppCompatActivity() {
         val menu: Menu = navigationView.menu
         val exitMenuItem: MenuItem = menu.findItem(R.id.exitMenuItem)
         exitMenuItem.setOnMenuItemClickListener {
-            val builder = AlertDialog.Builder(this)
+            val builder = AlertDialog.Builder(this@MainActivity)
             builder.setTitle("Confirmar salir")
                 .setMessage("¿Esta seguro que desea salir?")
                 .setPositiveButton("Si") { _, _ ->
-                    super.onBackPressed() // Exit the app
-                    finish()
+                    val intent = Intent(this@MainActivity, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish() // Optional: Finish the current activity
                 }
                 .setNegativeButton("No") { dialog, _ ->
-                    dialog.dismiss() // Dismiss the dialog
-                    /**
-                     * Se cancela la salida.
-                     *  y no se hace nada.
-                     */
+                    dialog.dismiss()
                 }
                 .show()
             true}
@@ -81,6 +83,26 @@ class MainActivity : AppCompatActivity() {
         val headerView: View = navigationView.getHeaderView(0) // 0 is the index of the header
         val usernameTextView: TextView = headerView.findViewById(R.id.username)
         usernameTextView.text = ident
+
+        // Controlando si presiona retroceder para salir de la aplicacion
+        val onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val builder = AlertDialog.Builder(this@MainActivity)
+                builder.setTitle("Confirmar salir")
+                    .setMessage("¿Esta seguro que desea salir?")
+                    .setPositiveButton("Si") { _, _ ->
+                        val intent = Intent(this@MainActivity, LoginActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        finish() // Optional: Finish the current activity
+                    }
+                    .setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -92,24 +114,5 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Confirmar salir")
-            .setMessage("¿Esta seguro que desea salir?")
-            .setPositiveButton("Si") { _, _ ->
-                super.onBackPressed() // Exit the app
-                finish()
-            }
-            .setNegativeButton("No") { dialog, _ ->
-                dialog.dismiss() // Dismiss the dialog
-                /**
-                 * Se cancela la salida.
-                 *  y no se hace nada.
-                 */
-            }
-            .show()
     }
 }
