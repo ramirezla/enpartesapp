@@ -15,7 +15,7 @@
 
     <ImageView
         android:id="@+id/logo_enpartes"
-        android:layout_width="407dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="27dp"
         android:layout_marginTop="48dp"
@@ -58,6 +58,8 @@
             android:selectAllOnFocus="true"
             android:singleLine="false"
             android:textColor="@color/colorNegro"
+            android:background="@color/white"
+            android:padding="16dp"
             android:textColorLink="@color/colorNegro" />
 
         <EditText
@@ -71,6 +73,7 @@
             android:imeOptions="actionDone"
             android:inputType="textPassword"
             android:selectAllOnFocus="true"
+            android:backgroundTint="#EEEEEE"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/username"
@@ -79,7 +82,7 @@
 
     <Button
         android:id="@+id/login"
-        android:layout_width="match_parent"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:layout_marginStart="48dp"
@@ -114,14 +117,19 @@
 
         <TextView
             android:id="@+id/nocuenta"
+            android:contentDescription="@string/nocuenta_description"
             android:layout_width="match_parent"
             android:layout_height="23dp"
             android:layout_marginBottom="24dp"
             android:gravity="center"
             android:text="@string/no_tiene_cuenta"
             android:textColor="@color/colorNegro"
+            android:background="@color/white"
+            android:padding="16dp"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
     </LinearLayout>
 
     <LinearLayout
@@ -149,7 +157,7 @@
             android:layout_weight="1"
             android:background="@drawable/enverdesm"
             android:gravity="end|center"
-            android:text="452,78"
+            android:text="@string/cantidad_verdes"
             android:textColor="@color/colorNegro"
             android:textSize="26sp"
             android:textStyle="bold" />

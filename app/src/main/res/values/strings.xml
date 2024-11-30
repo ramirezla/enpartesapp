@@ -31,4 +31,7 @@
     <string name="salir_item">Salir</string>
     <string name="mensaje_salir">¿Esta seguro que desea salir?</string>
 
+    <string name="cantidad_verdes">"478.9"</string>
+    <string name="nocuenta_description">"Ir a la pagina para crear y/o resetear password"</string>
+
 </resources>
