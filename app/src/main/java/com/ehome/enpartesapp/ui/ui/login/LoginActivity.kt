@@ -148,17 +148,20 @@ class LoginActivity : AppCompatActivity() {
         val authorization: Boolean,
         val message: String
     )
+
     // Crea la interfaz de la API
     interface AuthService {
         @GET("api/integracion")
         fun login(@Query("q") query: String): Call<AuthResponse>
     }
+
     // Configura Retrofit
     val retrofit = Retrofit.Builder()
         .baseUrl("https://enpartes.com/") // Reemplaza con tu URL base
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     val authService = retrofit.create(AuthService::class.java)
+
     //  Realiza la solicitud de autenticación
     fun authenticateUser(username: String, password: String) {
         val query = "{\"action\":\"VERIFYLOGIN\",\"userCode\":\"$username\",\"cKey\":\"$password\"}"
@@ -204,8 +207,19 @@ class LoginActivity : AppCompatActivity() {
             // TODO: Verificar la cuenta y el password del usuario
             // si esta todo bien
             // authenticateUser(nombreUsuario, passwordUsuario)
+            // Ejemplo
+            // val intent = Intent(this, SecondActivity::class.java)
+            // val bundle = Bundle()
+            // bundle.putString("username", username)
+            // bundle.putInt("age", age)
+            // intent.putExtras(bundle)
+            // startActivity(intent)
             val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("IDENT", nombreUsuario)
+            val bundle = Bundle()
+            bundle.putString("username", nombreUsuario)
+            bundle.putString("userpassword", passwordUsuario)
+            intent.putExtras(bundle)
+            //intent.putExtra("IDENT", nombreUsuario)
 
             startActivity(intent)
 //            if (ObtenerAcceso()) {

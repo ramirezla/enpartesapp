@@ -12,6 +12,7 @@ import com.ehome.enpartesapp.databinding.FragmentConsultasabiertasBinding
 class ConsultasabiertasFragment : Fragment() {
 
     private var _binding: FragmentConsultasabiertasBinding? = null
+    val username = arguments?.getString("username")
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -28,9 +29,18 @@ class ConsultasabiertasFragment : Fragment() {
         _binding = FragmentConsultasabiertasBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textConsultasabiertas
+        // Retrieve username and password from arguments
+        val username = arguments?.getString("username")
+        //val password = arguments?.getString("password")
+
+        val textView: TextView = binding.ConsAbiEmailAddress
+
+        // Update the TextView with the received values
+        textView.text = username // \nPassword: $password"
+
         consultasabiertasViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+            // You can use the ViewModel to further process or display the data if needed
+            // textView.text = it
         }
         return root
     }

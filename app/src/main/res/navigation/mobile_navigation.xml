@@ -9,13 +9,21 @@
         android:id="@+id/nav_consultas_abiertas"
         android:name="com.ehome.enpartesapp.ui.consultasabiertas.ConsultasabiertasFragment"
         android:label="@string/menu_consultas_abiertas"
-        tools:layout="@layout/fragment_consultasabiertas" />
+        tools:layout="@layout/fragment_consultasabiertas" >
+        <argument
+            android:name="username"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_solicitudes_abiertas"
         android:name="com.ehome.enpartesapp.ui.solicitudesabiertas.SolicitudesabiertasFragment"
         android:label="@string/menu_solicitudes_abiertas"
-        tools:layout="@layout/fragment_solicitudesabiertas" />
+        tools:layout="@layout/fragment_solicitudesabiertas" >
+        <argument
+            android:name="username"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_piezas_abiertas"

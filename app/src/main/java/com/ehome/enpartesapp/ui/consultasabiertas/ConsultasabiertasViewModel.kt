@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 class ConsultasabiertasViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "Consultasabiertas Fragment"
+        value = "<< Usuario >>"
     }
     val text: LiveData<String> = _text
 }

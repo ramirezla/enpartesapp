@@ -9,26 +9,29 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import com.ehome.enpartesapp.databinding.ActivityMainBinding
 import com.ehome.enpartesapp.ui.ui.login.LoginActivity
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-    private var ident: String? = null
+    //private var ident: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Se recibe el valor del id del usuario y el password permitido.
+        val nombreUsuario = intent.extras?.getString("username")
+        val passwordUsuario = intent.extras?.getString("userpassword")
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -39,20 +42,44 @@ class MainActivity : AppCompatActivity() {
                 .setAction("Action", null)
                 .setAnchorView(R.id.fab).show()
         }
+        // Se crea un bundle con los parametros que se desea pasar al fragment
+        val bundle = Bundle().apply {
+            putString("username", nombreUsuario)        // Pass nombreUsuario in the bundle
+            putString("userpassword", passwordUsuario)  // Pass passwordUsuario in the bundle
+        }
 
+        // Pasando cada ID de menú como un conjunto de ID porque cada
+        // opcion del menú debe considerarse como destino de nivel superior.
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_main)
-        // Pasando cada ID de menú como un conjunto de ID porque cada
-        // opcion del menú debe considerarse como destino de nivel superior.
         appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.nav_consultas_abiertas, R.id.nav_solicitudes_abiertas, R.id.nav_piezas_abiertas, R.id.nav_piezas_por_entregar, R.id.exitMenuItem
+                R.id.nav_consultas_abiertas ,
+                R.id.nav_solicitudes_abiertas,
+                R.id.nav_piezas_abiertas,
+                R.id.nav_piezas_por_entregar,
+                R.id.exitMenuItem
             ), drawerLayout
         )
-
+        // Se muestra el menu bar
         setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+
+        // Se activa el NavigationItemSelectedListener para obtener la opcion seleccionada
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_consultas_abiertas -> {
+                    navController.navigate(R.id.nav_consultas_abiertas, bundle)
+                }
+                R.id.nav_solicitudes_abiertas -> {
+                    navController.navigate(R.id.nav_solicitudes_abiertas, bundle)
+                }
+                // ... other menu items ...
+                else -> false // Handle other menu items or return false if not handled
+            }
+            drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer after navigation
+            true// Indicate that the item was handled
+        }
 
         // Boton de salida
         val navigationView: NavigationView = findViewById(R.id.nav_view)
@@ -74,15 +101,10 @@ class MainActivity : AppCompatActivity() {
                 .show()
             true}
 
-        // Se recibe el valor del id del usuario permitido en IDENT.
-        val b = intent.extras
-        checkNotNull(b)
-        ident = b.getString("IDENT")
-        title = null
-        // Se coloca el usuario en el navegador del menu
+        // Se coloca el usuario en el navegador del menu bar
         val headerView: View = navigationView.getHeaderView(0) // 0 is the index of the header
         val usernameTextView: TextView = headerView.findViewById(R.id.username)
-        usernameTextView.text = ident
+        usernameTextView.text = nombreUsuario
 
         // Controlando si presiona retroceder para salir de la aplicacion
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
