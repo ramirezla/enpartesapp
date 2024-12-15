@@ -7,20 +7,26 @@
 
     <application
         android:allowBackup="true"
-
-        android:icon="@drawable/iconoenpartes_app"
-        android:label="@string/app_name"
-        android:theme="@style/MyMaterialTheme"
-
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
+        android:icon="@drawable/iconoenpartes_app"
+        android:label="@string/app_name"
         android:roundIcon="@drawable/iconoenpartes_app"
         android:supportsRtl="true"
+        android:theme="@style/MyMaterialTheme"
         tools:targetApi="31">
         <activity
+            android:name=".ui.RegistrarActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.RegistroActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity android:name=".ui.ui.login.LoginActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.ui.login.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

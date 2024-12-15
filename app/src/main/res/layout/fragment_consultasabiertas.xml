@@ -3,9 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_consultasabiertas"
+    android:name="ConsAbiEmailAddress"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:name="ConsAbiEmailAddress" app:argType="string"
+    app:argType="string"
     tools:context=".ui.consultasabiertas.ConsultasabiertasFragment">
 
     <LinearLayout
@@ -14,7 +15,6 @@
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="272dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="end"
-            android:layout_marginEnd="100dp"
+            android:layout_marginEnd="20dp"
             android:layout_weight="1"
             android:clickable="false"
             android:contentDescription="@string/descripcion_logo_enpartes"
@@ -35,26 +35,128 @@
 
         <TextView
             android:id="@+id/ConsAbiEmailAddress"
-            android:layout_width="327dp"
+            android:layout_width="527dp"
             android:layout_height="48dp"
             android:layout_weight="1"
             android:autofillHints="@string/hint_cuenta_usuario"
             android:contentDescription="@string/hint_cuenta_usuario"
-            android:ems="10" />
+            android:ems="10"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:ignore="SmallSp" />
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textConsultasabiertas"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
+        android:id="@+id/textViewBuscarVehiculo"
+        android:layout_width="391dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="52dp"
+        android:gravity="center"
+        android:text="@string/buscar_vehículo"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/linearLayout" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="200dp"
+        android:layout_height="132dp"
+        android:layout_marginStart="16dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.161"
+        tools:ignore="MissingConstraints">
+
+        <TextView
+            android:id="@+id/textViewPlaca"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:text="Placa"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/editTextPlaca"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:background="@drawable/textview_border"
+            android:ems="10"
+            android:inputType="text"
+            android:text="Placa" />
+
+        <TextView
+            android:id="@+id/textViewSerial"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:text="Serial" />
+
+        <EditText
+            android:id="@+id/editTextSerial"
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:background="@drawable/textview_border"
+            android:ems="10"
+            android:inputType="text"
+            android:text="Serial" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="189dp"
+        android:layout_height="135dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.833"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.162">
+
+        <TextView
+            android:id="@+id/textViewIndicacion"
+            android:layout_width="match_parent"
+            android:layout_height="73dp"
+            android:gravity="center"
+            android:text="@string/indicacion_busqueda" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/buttonBuscar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Buscar" />
+
+            <Button
+                android:id="@+id/buttonCancelar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cancelar" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!--    <TextView
+            android:id="@+id/textConsultasabiertas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

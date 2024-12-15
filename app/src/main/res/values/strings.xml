@@ -30,9 +30,14 @@
     <string name="cuenta_usuario_item">Cuenta</string>
     <string name="salir_item">Salir</string>
     <string name="mensaje_salir">¿Esta seguro que desea salir?</string>
+    <string name="action_registrar">Registrar usuario</string>
 
     <string name="cantidad_verdes">"478.9"</string>
     <string name="nocuenta_description">"Ir a la pagina para crear y/o resetear password"</string>
 
     <string name="hint_cuenta_usuario">"Cuenta del usuario de enpartes.com"</string>
+    <string name="buscar_vehículo">"Buscar vehículo"</string>
+    <string name="indicacion_busqueda">"Indique al menos un campo para buscar el vehículo en el sistema y presione la tecla Enter o pulse el botón Buscar."</string>
+    <string name="title_activity_registro">RegistroActivity</string>
+
 </resources>

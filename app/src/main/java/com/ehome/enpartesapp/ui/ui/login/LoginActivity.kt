@@ -31,6 +31,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.ehome.enpartesapp.MainActivity
 import com.ehome.enpartesapp.databinding.ActivityLoginBinding
+import com.ehome.enpartesapp.ui.RegistrarActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -141,6 +142,13 @@ class LoginActivity : AppCompatActivity() {
             }
         }
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+
+        // Add onClick listener for registration button/link
+        binding.btnRegister?.setOnClickListener {
+            val intent = Intent(this, RegistrarActivity::class.java)
+            startActivity(intent)
+        }
+
     }
 
     // Define el modelo de datos para la respuesta
@@ -233,7 +241,7 @@ class LoginActivity : AppCompatActivity() {
         } else {
             /**
              * Error de conexion de internet...
-             */
+             **/
             Toast.makeText(
                 applicationContext,
                 "Error de conexion a internet",
@@ -244,11 +252,9 @@ class LoginActivity : AppCompatActivity() {
 
     /**
      * La función isOnLineNet.
-     * <p>
      * Esta función retorna true si hay conexión a internet.
      * Se puede cambiar el sitio web.
-     * </p>
-     */
+     **/
     private fun isOnlineNet(): Boolean {
         try {
             val p = Runtime.getRuntime().exec("ping -c 1 www.google.es")
