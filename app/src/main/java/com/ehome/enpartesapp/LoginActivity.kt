@@ -1,5 +1,6 @@
 package com.ehome.enpartesapp
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +22,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 import android.provider.Settings
+import androidx.activity.OnBackPressedCallback
 
 class LoginActivity : AppCompatActivity() {
 
@@ -41,11 +43,37 @@ class LoginActivity : AppCompatActivity() {
 
         // Set click listener for the login button
         binding.login.setOnClickListener {
-            binding.loading.visibility = View.VISIBLE
+            binding.loginProgressBar.visibility = View.VISIBLE
             val accessCode = binding.username.text.toString()
             val cKey = binding.password.text.toString()
             makeApiRequest(accessCode, cKey)
         }
+
+        // Set click listener for the btnRegister button
+        binding.btnRegister.setOnClickListener {
+            binding.loginProgressBar.visibility = View.VISIBLE
+            // TODO Navigate to RegisterFragment
+            //showRegisterFragment()
+        }
+        // Controlando si presiona retroceder para salir de la aplicacion
+        val onBackPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val builder = AlertDialog.Builder(this@LoginActivity)
+                builder.setTitle("Confirmar salir")
+                    .setMessage("¿Esta seguro que desea salir?")
+                    .setPositiveButton("Si") { _, _ ->
+                        if (isTaskRoot) {finishAffinity()
+                        } else {
+                            finish()
+                        }
+                    }
+                    .setNegativeButton("No") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     }
 
     object NetworkUtils {
@@ -64,16 +92,19 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    // Se configura la clase que guardara la respuesta de integracion cuando se pregunta si el usuario es valido
     data class AuthResponse(
         val code: String,
         val msg: String
     )
 
+    // Interfaz para la solicitud en integracion
     interface ApiService {
         @GET("/integracion") // Endpoint
         fun verifyLogin(@Query("q") query: String): Call<AuthResponse>
     }
 
+    // Crea el servicio para preguntar a integracion
     object RetrofitClient {
         private const val BASE_URL = "http://192.168.1.143/" // Your base URL
 
@@ -109,9 +140,10 @@ class LoginActivity : AppCompatActivity() {
 
         call.enqueue(object : Callback<AuthResponse> {
             override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
-                binding.loading.visibility = View.GONE
+                binding.loginProgressBar.visibility = View.GONE
                 if (response.isSuccessful) {
                     val authResponse = response.body()
+                    // Thread.sleep(3000) // Sleep for 3 seconds (for testing only)
                     if (authResponse != null) {
                         // Handle the successful response using a when statement
                         when (authResponse.code) {
@@ -142,7 +174,7 @@ class LoginActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
-                binding.loading.visibility = View.GONE
+                binding.loginProgressBar.visibility = View.GONE
                 // Handle the network failure
                 Log.e("API Failure", "Error: ${t.message}")
                 // Show error dialog
