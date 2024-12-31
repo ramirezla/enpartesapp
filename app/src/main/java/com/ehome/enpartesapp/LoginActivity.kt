@@ -51,10 +51,14 @@ class LoginActivity : AppCompatActivity() {
 
         // Set click listener for the btnRegister button
         binding.btnRegister.setOnClickListener {
-            binding.loginProgressBar.visibility = View.VISIBLE
-            // TODO Navigate to RegisterFragment
-            //showRegisterFragment()
+            //binding.loginProgressBar.visibility = View.VISIBLE
+            // Thread.sleep(3000) // Sleep for 3 seconds (for testing only)
+            // Navigate to RegisterActivity
+            val intent = Intent(this@LoginActivity, RegistrarActivity::class.java)
+            startActivity(intent)
+            //finish()
         }
+
         // Controlando si presiona retroceder para salir de la aplicacion
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -149,8 +153,8 @@ class LoginActivity : AppCompatActivity() {
                         when (authResponse.code) {
                             "200" -> {
                                 // Handle code 200 (success)
-                                Log.d("API Response", "Code 200: ${authResponse.msg}")
-                                Toast.makeText(this@LoginActivity, "Success: ${authResponse.msg}", Toast.LENGTH_LONG).show()
+                                // Log.d("API Response", "Code 200: ${authResponse.msg}")
+                                // Toast.makeText(this@LoginActivity, "Success: ${authResponse.msg}", Toast.LENGTH_LONG).show()
                                 // Navigate to MainActivity
                                 val intent = Intent(this@LoginActivity, MainActivity::class.java)
                                 startActivity(intent)

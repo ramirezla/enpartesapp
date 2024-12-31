@@ -33,4 +33,5 @@
     <color name="windowBackground">#FFFFFF</color>
     <color name="navigationBarColor">#000000</color>
     <color name="colortabseleccionado">#fc2b01</color>
+    <color name="blue_pressed">#1976D2</color>
 </resources>
