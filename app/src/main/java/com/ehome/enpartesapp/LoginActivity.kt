@@ -157,6 +157,10 @@ class LoginActivity : AppCompatActivity() {
                                 // Toast.makeText(this@LoginActivity, "Success: ${authResponse.msg}", Toast.LENGTH_LONG).show()
                                 // Navigate to MainActivity
                                 val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                                val bundle = Bundle()
+                                bundle.putString("username", accessCode)
+                                bundle.putString("userpassword", cKey)
+                                intent.putExtras(bundle)
                                 startActivity(intent)
                                 finish() // Close LoginActivity
                             }
