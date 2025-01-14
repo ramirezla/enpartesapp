@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_consultas_abiertas">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="com.ehome.enpartesapp.ui.home.HomeFragment"
+        android:id="@+id/nav_consultas_abiertas"
+        android:name="com.ehome.enpartesapp.ui.home.ConsultasAbiertasFragment"
         android:label="@string/menu_consultas_abiertas"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_consultasabiertas" />
 
     <fragment
         android:id="@+id/nav_gallery"
