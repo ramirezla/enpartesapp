@@ -64,4 +64,9 @@
     <string name="title_activity_registro">RegistroActivity</string>
     <string name="derechos_fragment_label">Derechos, terminos y condiciones de uso.</string>
     <string name="accept_license">Lei y estoy de acuerdo.</string>
+    <string name="seleccionar">Seleccionar</string>
+
+    <!-- TODO: Texto consultas abiertas -->
+    <string name="hint_placa_serial">Ingrese la placa o el Serial del vehículo.</string>
+
 </resources>

@@ -9,6 +9,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import com.ehome.enpartesapp.R
 import com.ehome.enpartesapp.databinding.FragmentConsultasabiertasBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -16,22 +18,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-
-//TODO:
-// Buscador para Obtener el vehiculo por placa o serial (todos las veces que aparece el vehiculo, se selecciona 1)
-//  -> todos reclamos (y se selecciona 1) getVehicleClaim con el id del vehiculo
-//      -> Las solicitudes o reclamos seleccionar el reclamo
-//          -> Leer las partes del reclamo y mostrarlos (getParts)
-
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-data class VehicleResponse(
-    val infoVehicle: VehicleData?
-)
+//TODO:
+// Buscador para Obtener el vehiculo por placa o serial (todos las veces que aparece el vehiculo, se selecciona uno)
+//  -> todos reclamos (y se selecciona 1) getVehicleClaim con el id del vehiculo
+//      -> Las solicitudes o reclamos seleccionar el reclamo, ejemplo "claimId": 260 y "snumerosolicitud": "E3F74736-BA3A-4BC0-9FAA-09C16FB290F9",
+//          -> Leer las partes del reclamo y mostrarlos (getParts) GETPARTSCLAIM con clainnumber, separar por tab: vehiculo, piezas y destinos.
 
 data class VehicleData(
     val datos: VehicleInfo?,
@@ -55,13 +53,7 @@ data class VehicleCarac(
     val carac: String?
 )
 
-//interface ApiService {
-//    @GET("/integracion")
-//    suspend fun findVehicle(
-//        @Query("q") query: String
-//    ): Response<VehicleResponse>
-//}
-
+// API interface
 interface ApiService {
     @GET("/integracion")
     suspend fun findVehicle(
@@ -69,6 +61,7 @@ interface ApiService {
     ): Response<Map<String, VehicleData>> // Changed return type to Map<String, VehicleData>
 }
 
+// Retrofit client
 object RetrofitClient {
     private const val BASE_URL = "http://192.168.1.143"
 
@@ -92,19 +85,21 @@ class ConsultasAbiertasFragment : Fragment() {
 
     private lateinit var licensePlateInputLayout: TextInputLayout
     private lateinit var licensePlateEditText: TextInputEditText
-    private lateinit var serialCarroceriaInputLayout: TextInputLayout
-    private lateinit var serialCarroceriaEditText: TextInputEditText
     private lateinit var searchButton: Button
     private lateinit var resultTextView: TextView
     private lateinit var resultContainer: LinearLayout
+
+    // Variables to hold the state
+    private var currentLicensePlate: String? = null
+    private var currentResults: String? = null
+    private val currentResultContainerState = mutableListOf<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
+        val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
         _binding = FragmentConsultasabiertasBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -112,8 +107,6 @@ class ConsultasAbiertasFragment : Fragment() {
         // Initialize views
         licensePlateInputLayout = binding.licensePlateInputLayout
         licensePlateEditText = binding.licensePlateEditText
-        serialCarroceriaInputLayout = binding.serialCarroceriaInputLayout
-        serialCarroceriaEditText = binding.serialCarroceriaEditText
         searchButton = binding.searchButton
         resultTextView = binding.resultTextView
         resultContainer = binding.resultContainer
@@ -126,35 +119,50 @@ class ConsultasAbiertasFragment : Fragment() {
         return root
     }
 
-    private fun searchVehicle() {
-        val licensePlate = licensePlateEditText.text.toString().trim()
-        val serialCarroceria = serialCarroceriaEditText.text.toString().trim()
-
-        // Validate input (one or the other, not both)
-        if (licensePlate.isEmpty() && serialCarroceria.isEmpty()) {
-            licensePlateInputLayout.error = "Ingrese la placa o el serial"
-            serialCarroceriaInputLayout.error = "Ingrese la placa o el serial"
-            return
-        } else {
-            licensePlateInputLayout.error = null
-            serialCarroceriaInputLayout.error = null
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // Restore state if available (either from savedInstanceState or after returning from GalleryFragment)
+        if (savedInstanceState != null) {
+            currentLicensePlate = savedInstanceState.getString("licensePlate")
+            currentResults = savedInstanceState.getString("results")
+            currentResultContainerState.addAll(savedInstanceState.getStringArrayList("resultContainerState") ?: emptyList())
         }
 
-        if (licensePlate.isNotEmpty() && serialCarroceria.isNotEmpty()) {
-            licensePlateInputLayout.error = "Ingrese solo la placa o el serial"
-            serialCarroceriaInputLayout.error = "Ingrese solo la placa o el serial"
+        licensePlateEditText.setText(currentLicensePlate)
+        resultTextView.text = currentResults
+        resultTextView.visibility = if (currentResults.isNullOrEmpty()) View.GONE else View.VISIBLE
+
+        // Restore the resultContainer state
+        restoreResultContainerState()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Save the state of your views here
+        outState.putString("licensePlate", licensePlateEditText.text.toString())
+        outState.putString("results", resultTextView.text.toString())
+        outState.putStringArrayList("resultContainerState", ArrayList(currentResultContainerState))
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    private fun searchVehicle() {
+        val licensePlate = licensePlateEditText.text.toString().trim()
+        currentLicensePlate = licensePlate
+
+        // Validate input (one or the other, not both)
+        if (licensePlate.isEmpty()) {
+            licensePlateInputLayout.error = "Ingrese la placa o el serial"
             return
         } else {
             licensePlateInputLayout.error = null
-            serialCarroceriaInputLayout.error = null
         }
 
         // Prepare the query
-        val query = if (licensePlate.isNotEmpty()) {
-            "{\"action\":\"FINDVEHICLE\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"licensePlate\":\"$licensePlate\"}"
-        } else {
-            "{\"action\":\"FINDVEHICLE\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"serialNumber\":\"$serialCarroceria\"}"
-        }
+        val query = "{\"action\":\"FINDVEHICLE\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"licensePlate\":\"$licensePlate\",\"serialNumber\":\"$licensePlate\"}"
 
         // Make the API request
         CoroutineScope(Dispatchers.IO).launch {
@@ -169,11 +177,15 @@ class ConsultasAbiertasFragment : Fragment() {
                             resultTextView.text = "No se encontraron resultados."
                             resultTextView.visibility = View.VISIBLE
                             resultContainer.removeAllViews()
+                            currentResults = "No se encontraron resultados."
+                            currentResultContainerState.clear()
                         }
                     } else {
                         resultTextView.text = "Error en la solicitud: ${response.code()}"
                         resultTextView.visibility = View.VISIBLE
                         resultContainer.removeAllViews()
+                        currentResults = "Error en la solicitud: ${response.code()}"
+                        currentResultContainerState.clear()
                     }
                 }
             } catch (e: Exception) {
@@ -181,74 +193,79 @@ class ConsultasAbiertasFragment : Fragment() {
                     resultTextView.text = "Error: ${e.message}"
                     resultTextView.visibility = View.VISIBLE
                     resultContainer.removeAllViews()
+                    currentResults = "Error: ${e.message}"
+                    currentResultContainerState.clear()
                 }
             }
         }
     }
 
-//    private fun displayVehicleData(vehicleResponse: VehicleResponse) {
-//        resultTextView.visibility = View.VISIBLE
-//        resultContainer.removeAllViews()
-//
-//        val vehicleData = vehicleResponse.infoVehicle
-//        if (vehicleData != null) {
-//            val vehicleInfo = vehicleData.datos
-//            if (vehicleInfo != null) {
-//                addTextViewToContainer("vehicleId: ${vehicleInfo.vehicleId}")
-//                addTextViewToContainer("brandId: ${vehicleInfo.brandId}")
-//                addTextViewToContainer("brandName: ${vehicleInfo.brandName}")
-//                addTextViewToContainer("modelId: ${vehicleInfo.modelId}")
-//                addTextViewToContainer("modelName: ${vehicleInfo.modelName}")
-//                addTextViewToContainer("licensePlate: ${vehicleInfo.licensePlate}")
-//                addTextViewToContainer("vin: ${vehicleInfo.vin}")
-//                addTextViewToContainer("serialNumber: ${vehicleInfo.serialNumber}")
-//                addTextViewToContainer("year: ${vehicleInfo.year}")
-//            }
-//
-//            val vehicleCarac = vehicleData.carac
-//            if (vehicleCarac != null) {
-//                for (carac in vehicleCarac) {
-//                    addTextViewToContainer("vehicleId: ${carac.vehicleId}")
-//                    addTextViewToContainer("carac: ${carac.carac}")
-//                }
-//            }
-//        }
-//    }
-
     private fun displayVehicleData(vehicleResponse: Map<String, VehicleData>) {
         resultTextView.visibility = View.VISIBLE
         resultContainer.removeAllViews()
+        currentResultContainerState.clear()
+
+        // Define the list of characteristics you want to display
+        val caracteristicasMostrar = listOf("Clase", "cylinder", "Categoría", "liters", "Carrocería", "transmission/Transmisión","Transmisión/Tracción", "Tipo de Carrocería") // Only these three
+        val caracteristicasNombres = listOf("Clase", "Cilindro", "Categoría", "Litros", "Carrocería", "Caja/Transmisión","Transmisión/Tracción", "Tipo de Carrocería") // Only these three
 
         // Iterate through the Map using entries
         for (entry in vehicleResponse.entries) {
-            val vehicleKey = entry.key
+            // val vehicleKey = entry.key
+            // addTextViewToContainer("Vehicle Key: $vehicleKey")
             val vehicleData = entry.value
-
-            // Add a header for each vehicle
-            addTextViewToContainer("--------------------")
-            addTextViewToContainer("Vehicle Key: $vehicleKey")
-            addTextViewToContainer("--------------------")
 
             // Display VehicleInfo
             val vehicleInfo = vehicleData.datos
             if (vehicleInfo != null) {
-                addTextViewToContainer("vehicleId: ${vehicleInfo.vehicleId}")
-                addTextViewToContainer("brandId: ${vehicleInfo.brandId}")
-                addTextViewToContainer("brandName: ${vehicleInfo.brandName}")
-                addTextViewToContainer("modelId: ${vehicleInfo.modelId}")
-                addTextViewToContainer("modelName: ${vehicleInfo.modelName}")
-                addTextViewToContainer("licensePlate: ${vehicleInfo.licensePlate}")
-                addTextViewToContainer("vin: ${vehicleInfo.vin}")
-                addTextViewToContainer("serialNumber: ${vehicleInfo.serialNumber}")
-                addTextViewToContainer("year: ${vehicleInfo.year}")
-            }
+                val vehicleCarac = vehicleData.carac
+                if (vehicleCarac !=null) {
+                    for (carac in vehicleCarac) {
+                        // addTextViewToContainer("---------------------------------------------")
+                        addTextViewToContainer(" ")
+                        // addTextViewToContainer("vehicleId: ${vehicleInfo.vehicleId}")
+                        addTextViewToContainer("Marca: ${vehicleInfo.brandName}")
+                        addTextViewToContainer("Modelo: ${vehicleInfo.modelName}")
+                        addTextViewToContainer("Año: ${vehicleInfo.year}")
+                        addTextViewToContainer("  vehicleId: ${carac.vehicleId}")
 
-            // Display VehicleCarac
-            val vehicleCarac = vehicleData.carac
-            if (vehicleCarac !=null) {
-                for (carac in vehicleCarac) {
-                    addTextViewToContainer("  vehicleId: ${carac.vehicleId}")
-                    addTextViewToContainer("carac: ${carac.carac}")
+                        // Parse the inner JSON string
+                        val caracJson = JSONObject(carac.carac)
+
+                        // Build the characteristics string
+                        val characteristicsLine = StringBuilder()
+
+                        // Se crea la linea de caracteristicas.
+                        caracteristicasMostrar.forEachIndexed { index, characteristic ->
+                            if (caracJson.has(characteristic)) {
+                                val value = caracJson.getString(characteristic)
+                                val nombreCarac = caracteristicasNombres[index]
+                                characteristicsLine.append("$nombreCarac: $value, ")
+                            }
+                        }
+                        // Add the complete line to the container
+                        addTextViewToContainer(characteristicsLine.toString())
+
+                        addTextViewToContainer("Placa: ${vehicleInfo.licensePlate}")
+                        addTextViewToContainer("serial: ${vehicleInfo.serialNumber}")
+                        addTextViewToContainer("vin: ${vehicleInfo.vin}")
+
+                        // Create and add the button
+                        val selectButton = Button(requireContext())
+                        selectButton.text = "Seleccionar"
+                        selectButton.setOnClickListener {
+                            // Handle button click (e.g., log the characteristic)
+                            addTextViewToContainer("vehicleId: ${carac.vehicleId}")
+
+                            // TODO: ir al fragment para solicitar
+                            // Navigate to GalleryFragment and pass the vehicleId
+                            val bundle = Bundle().apply {
+                                putString("vehicleId", carac.vehicleId)
+                            }
+                            findNavController().navigate(R.id.action_nav_consultas_abiertas_to_nav_gallery, bundle)
+                        }
+                        resultContainer.addView(selectButton)
+                    }
                 }
             }
         }
@@ -258,12 +275,13 @@ class ConsultasAbiertasFragment : Fragment() {
         val textView = TextView(requireContext())
         textView.text = text
         resultContainer.addView(textView)
+        currentResultContainerState.add(text)
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    private fun restoreResultContainerState() {
+        resultContainer.removeAllViews()
+        for (text in currentResultContainerState) {
+            addTextViewToContainer(text)
+        }
     }
 }
-
-// Error: com.ehome.enpartesapp.ui.home.VehicleResponse cannot be cast to java.util.map

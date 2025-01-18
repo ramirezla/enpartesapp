@@ -9,17 +9,44 @@
         android:id="@+id/nav_consultas_abiertas"
         android:name="com.ehome.enpartesapp.ui.home.ConsultasAbiertasFragment"
         android:label="@string/menu_consultas_abiertas"
-        tools:layout="@layout/fragment_consultasabiertas" />
+        tools:layout="@layout/fragment_consultasabiertas" >
+
+        <action
+            android:id="@+id/action_nav_consultas_abiertas_to_nav_gallery"
+            app:destination="@id/nav_gallery" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_gallery"
         android:name="com.ehome.enpartesapp.ui.gallery.GalleryFragment"
         android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        tools:layout="@layout/fragment_gallery" >
+
+        <action
+            android:id="@+id/action_nav_gallery_to_nav_slideshow"
+            app:destination="@id/nav_slideshow" />
+        <action
+            android:id="@+id/action_nav_gallery_to_nav_consultas_abiertas"
+            app:destination="@id/nav_consultas_abiertas"
+            app:popUpTo="@id/nav_consultas_abiertas"
+            app:popUpToInclusive="false" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_slideshow"
         android:name="com.ehome.enpartesapp.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        tools:layout="@layout/fragment_slideshow" >
+
+        <action
+            android:id="@+id/action_nav_slideshow_to_nav_gallery"
+            app:destination="@id/nav_gallery" />
+    </fragment>
+
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.ehome.enpartesapp.MainActivity"
+        android:label="activity_main"
+        tools:layout="@layout/activity_main" />
+
 </navigation>

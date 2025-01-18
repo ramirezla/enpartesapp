@@ -11,26 +11,11 @@
         android:id="@+id/licensePlateInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Placa (License Plate)"
+        android:hint="@string/hint_placa_serial"
         app:endIconMode="clear_text">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/licensePlateEditText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textCapCharacters" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/serialCarroceriaInputLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:hint="Serial Carrocería"
-        app:endIconMode="clear_text">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/serialCarroceriaEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textCapCharacters" />
@@ -41,14 +26,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Buscar" />
+        style="@style/CustomButtonStyle"
+        android:text="@string/buscar_vehículo" />
 
     <TextView
         android:id="@+id/resultTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Resultado de la búsqueda"
         android:visibility="gone" />
 
     <ScrollView
