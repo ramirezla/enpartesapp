@@ -121,7 +121,7 @@ class ConsultasAbiertasFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Restore state if available (either from savedInstanceState or after returning from GalleryFragment)
+        // Restore state if available (either from savedInstanceState or after returning from ReclamosFragment)
         if (savedInstanceState != null) {
             currentLicensePlate = savedInstanceState.getString("licensePlate")
             currentResults = savedInstanceState.getString("results")
@@ -227,7 +227,7 @@ class ConsultasAbiertasFragment : Fragment() {
                         addTextViewToContainer("Marca: ${vehicleInfo.brandName}")
                         addTextViewToContainer("Modelo: ${vehicleInfo.modelName}")
                         addTextViewToContainer("Año: ${vehicleInfo.year}")
-                        addTextViewToContainer("  vehicleId: ${carac.vehicleId}")
+                        addTextViewToContainer("vehicleId: ${carac.vehicleId}")
 
                         // Parse the inner JSON string
                         val caracJson = JSONObject(carac.carac)
@@ -258,11 +258,19 @@ class ConsultasAbiertasFragment : Fragment() {
                             addTextViewToContainer("vehicleId: ${carac.vehicleId}")
 
                             // TODO: ir al fragment para solicitar
-                            // Navigate to GalleryFragment and pass the vehicleId
+                            // Navigate to ReclamosFragment and pass the vehicleId
                             val bundle = Bundle().apply {
+                                putString("brandName", vehicleInfo.brandName)
+                                putString("modelName", vehicleInfo.modelName)
+                                putString("year", vehicleInfo.year)
                                 putString("vehicleId", carac.vehicleId)
+                                putString("licensePlate", vehicleInfo.licensePlate)
+                                putString("serialNumber", vehicleInfo.serialNumber)
+                                putString("vin", vehicleInfo.vin)
+                                // Add VehicleCarac data (characteristics)
+                                putString("characteristicsLine", characteristicsLine.toString())
                             }
-                            findNavController().navigate(R.id.action_nav_consultas_abiertas_to_nav_gallery, bundle)
+                            findNavController().navigate(R.id.action_nav_consultas_abiertas_to_nav_reclamos, bundle)
                         }
                         resultContainer.addView(selectButton)
                     }

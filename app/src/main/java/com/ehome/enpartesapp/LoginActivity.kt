@@ -110,7 +110,8 @@ class LoginActivity : AppCompatActivity() {
 
     // Crea el servicio para preguntar a integracion
     object RetrofitClient {
-        private const val BASE_URL = "http://192.168.1.143/" // Your base URL
+        private const val BASE_URL = "http://192.168.1.143/" // ip URL eHome
+        // private const val BASE_URL = "http://192.168.12.180/" // ip URL de la oficina
 
         val instance: ApiService by lazy {
             //Create a logging interceptor
@@ -186,7 +187,7 @@ class LoginActivity : AppCompatActivity() {
                 // Handle the network failure
                 Log.e("API Failure", "Error: ${t.message}")
                 // Show error dialog
-                showErrorDialog("Network Error onFailure", t.message ?: "Unknown network error")
+                showErrorDialog("Network Error onFailure...", t.message ?: "Unknown network error")
             }
         })
     }

@@ -12,21 +12,21 @@
         tools:layout="@layout/fragment_consultasabiertas" >
 
         <action
-            android:id="@+id/action_nav_consultas_abiertas_to_nav_gallery"
-            app:destination="@id/nav_gallery" />
+            android:id="@+id/action_nav_consultas_abiertas_to_nav_reclamos"
+            app:destination="@id/nav_reclamos" />
     </fragment>
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.ehome.enpartesapp.ui.gallery.GalleryFragment"
+        android:id="@+id/nav_reclamos"
+        android:name="com.ehome.enpartesapp.ui.reclamos.ReclamosFragment"
         android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" >
+        tools:layout="@layout/fragment_reclamos" >
 
         <action
-            android:id="@+id/action_nav_gallery_to_nav_slideshow"
+            android:id="@+id/action_nav_reclamos_to_nav_slideshow"
             app:destination="@id/nav_slideshow" />
         <action
-            android:id="@+id/action_nav_gallery_to_nav_consultas_abiertas"
+            android:id="@+id/action_nav_reclamos_to_nav_consultas_abiertas"
             app:destination="@id/nav_consultas_abiertas"
             app:popUpTo="@id/nav_consultas_abiertas"
             app:popUpToInclusive="false" />
@@ -39,8 +39,8 @@
         tools:layout="@layout/fragment_slideshow" >
 
         <action
-            android:id="@+id/action_nav_slideshow_to_nav_gallery"
-            app:destination="@id/nav_gallery" />
+            android:id="@+id/action_nav_slideshow_to_nav_reclamos"
+            app:destination="@id/nav_reclamos" />
     </fragment>
 
     <activity

@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_consultas_abiertas,
-                R.id.nav_gallery,
+                R.id.nav_reclamos,
                 R.id.nav_slideshow,
                 R.id.exitMenuItem
             ), drawerLayout
