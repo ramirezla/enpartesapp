@@ -19,7 +19,7 @@
     <fragment
         android:id="@+id/nav_reclamos"
         android:name="com.ehome.enpartesapp.ui.reclamos.ReclamosFragment"
-        android:label="@string/menu_gallery"
+        android:label="@string/menu_reclamos"
         tools:layout="@layout/fragment_reclamos" >
 
         <action

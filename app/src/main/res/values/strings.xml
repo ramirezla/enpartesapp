@@ -35,6 +35,7 @@
     <string name="action_settings">Configuración</string>
     <string name="menu_grupo_cosultas">Consultas</string>
     <string name="menu_consultas_abiertas">Consultas Abiertas</string>
+    <string name="menu_reclamos">Reclamos</string>
     <string name="menu_grupo_solicitudes">Solicitudes</string>
     <string name="menu_solicitudes_abiertas">Solicitudes Abiertas</string>
     <string name="menu_grupo_piezas">Piezas</string>
