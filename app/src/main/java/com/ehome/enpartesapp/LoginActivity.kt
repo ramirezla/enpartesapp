@@ -188,6 +188,15 @@ class LoginActivity : AppCompatActivity() {
                 Log.e("API Failure", "Error: ${t.message}")
                 // Show error dialog
                 showErrorDialog("Network Error onFailure...", t.message ?: "Unknown network error")
+//                // Temporal sin internet
+//                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+//                val bundle = Bundle()
+//                bundle.putString("username", accessCode)
+//                bundle.putString("userpassword", cKey)
+//                intent.putExtras(bundle)
+//                startActivity(intent)
+//                finish() // Close LoginActivity
+//                // Temporal sin internet
             }
         })
     }

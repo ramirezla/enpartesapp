@@ -3,27 +3,37 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/nav_consultas_abiertas_2">
 
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.ehome.enpartesapp.FirstFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first" >
-
+        android:id="@+id/nav_consultas_abiertas_2"
+        android:name="com.ehome.enpartesapp.ui.home.ConsultasAbiertasFragment"
+        android:label="@string/menu_consultas_abiertas"
+        tools:layout="@layout/fragment_consultasabiertas" >
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_nav_consultas_abiertas_to_nav_presupuestofragment"
+            app:destination="@id/nav_presupuestofragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.ehome.enpartesapp.SecondFragment"
+        android:id="@+id/nav_presupuestofragment"
+        android:name="com.ehome.enpartesapp.ui.Presupuesto.PresupuestoFragment"
+        android:label="@string/first_fragment_label"
+        tools:layout="@layout/fragment_presupuesto" >
+
+        <action
+            android:id="@+id/action_FirstFragment_to_SecondFragment"
+            app:destination="@id/nav_secondfragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_secondfragment"
+        android:name="com.ehome.enpartesapp.ui.Presupuesto.SecondFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_second" >
 
         <action
             android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
+            app:destination="@id/nav_presupuestofragment" />
     </fragment>
 </navigation>

@@ -1,4 +1,4 @@
-package com.ehome.enpartesapp
+package com.ehome.enpartesapp.ui.Presupuesto
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import com.ehome.enpartesapp.R
 import com.ehome.enpartesapp.databinding.FragmentSecondBinding
 
 /**

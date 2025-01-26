@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
             setOf(
                 R.id.nav_consultas_abiertas,
                 R.id.nav_reclamos,
-                R.id.nav_slideshow,
+                R.id.nav_presupuestofragment,
                 R.id.exitMenuItem
             ), drawerLayout
         )
@@ -66,6 +66,9 @@ class MainActivity : AppCompatActivity() {
             when (menuItem.itemId) {
                 R.id.nav_consultas_abiertas -> {
                     navController.navigate(R.id.nav_consultas_abiertas, bundle)
+                }
+                R.id.nav_presupuestofragment -> {
+                    navController.navigate(R.id.action_nav_consultas_abiertas_to_nav_presupuestofragment, bundle)
                 }
 //                R.id.nav_solicitudes_abiertas -> {
 //                    navController.navigate(R.id.nav_solicitudes_abiertas, bundle)

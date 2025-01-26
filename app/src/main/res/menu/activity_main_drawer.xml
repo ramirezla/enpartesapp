@@ -14,13 +14,13 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_presupuesto"
+            android:id="@+id/nav_gallery"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Gallery" />
+        <item
+            android:id="@+id/nav_presupuestofragment"
             android:icon="@drawable/ic_menu_camera"
             android:title="Presupuesto" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Configuracion" />
     </group>
     
     <item android:title="">
