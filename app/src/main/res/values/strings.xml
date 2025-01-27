@@ -68,6 +68,12 @@
     <string name="accept_license">Lei y estoy de acuerdo.</string>
     <string name="seleccionar">Seleccionar</string>
 
+    <string name="borrar_foto">Borrar foto.</string>
+    <string name="agregar_foto">Agrregar imagen.</string>
+    <string name="imagen_referencia">Referencia</string>
+    <string name="tomar_foto">Tomar foto.</string>
+    <string name="subir_foto">Subir imagen.</string>
+
     <!-- TODO: Texto consultas abiertas -->
     <string name="hint_placa_serial">Ingrese la placa o el Serial del vehículo.</string>
 

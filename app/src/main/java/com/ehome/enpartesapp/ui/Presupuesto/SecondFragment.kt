@@ -36,7 +36,7 @@ private var _binding: FragmentSecondBinding? = null
             findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
         }
     }
-override fun onDestroyView() {
+    override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }

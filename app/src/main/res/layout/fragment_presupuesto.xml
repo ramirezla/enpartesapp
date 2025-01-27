@@ -6,32 +6,163 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.Presupuesto.PresupuestoFragment">
-    <androidx.constraintlayout.widget.ConstraintLayout
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:padding="16dp">
 
-        <Button
-            android:id="@+id/button_take_photo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            style="@style/CustomButtonStyle"
-            android:text="Tomar foto" />
-
-        <ImageView
-            android:id="@+id/image_preview"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/button_take_photo"/>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/photoTypeRecyclerView"
+        <!-- Campo: Case Number -->
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/image_preview" />
+            android:hint="Case Number"
+            android:layout_marginBottom="16dp">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etCaseNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Campo: Full Name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Full Name"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etFullName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Campo: Email -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Email"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Campo: Date of Inspection -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Date of Inspection"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etDateOfInspection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="date" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Campo: Language -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Language"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etLanguage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Título para el Spinner de tipo de vehículo -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tipo del vehículo"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Spinner para seleccionar el tipo de vehículo -->
+        <Spinner
+            android:id="@+id/spinnerTipoVehiculo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/btn_dropdown"
+            style="@style/SpinnerTextStyle"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Título para la foto del VIN Number -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Número de VIN"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Línea especial para el VIN Number -->
+        <include
+            layout="@layout/item_foto_vin_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Título para las demás fotos -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fotos del vehículo"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <!-- RecyclerView para las demás fotos -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:listitem="@layout/item_foto" />
+
+        <!-- Botones de Cancelar y Aceptar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp"
+            android:gravity="center_horizontal"
+            android:padding="8dp">
+
+            <!-- Botón Cancelar -->
+            <Button
+                android:id="@+id/btnCancelar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cancelar"
+                android:backgroundTint="@color/naranja"
+                android:textColor="@color/white"
+                android:layout_marginEnd="8dp" />
+
+            <!-- Botón Aceptar -->
+            <Button
+                android:id="@+id/btnAceptar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Aceptar"
+                android:backgroundTint="@color/blue"
+                android:textColor="@color/white" />
+        </LinearLayout>
+    </LinearLayout>
+
 </androidx.core.widget.NestedScrollView>
