@@ -7,7 +7,7 @@
         <menu>
             <item
                 android:id="@+id/nav_consultas_abiertas"
-                android:icon="@drawable/ic_menu_gallery"
+                android:icon="@drawable/analyze_list_logs_search_icon"
                 android:title="@string/menu_consultas_abiertas" />
         </menu>
     </item>
@@ -18,11 +18,25 @@
             android:icon="@drawable/ic_menu_gallery"
             android:title="Gallery" />
         <item
-            android:id="@+id/nav_presupuestofragment"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Presupuesto" />
+            android:id="@+id/nav_siniestro"
+            android:icon="@drawable/car_crash_2_icon"
+            android:title="Siniestro">
+            <menu>
+                <group android:id="@+id/group_siniestro_submenu"> <!-- Agrega el ID aquí -->
+                    <item
+                        android:id="@+id/nav_reportar_siniestro"
+                        android:title="Reportar" />
+                    <item
+                        android:id="@+id/nav_consultar_siniestro"
+                        android:title="Consultar" />
+                    <item
+                        android:id="@+id/nav_descargar_pdf_siniestro"
+                        android:title="Descargar PDF" />
+                </group>
+            </menu>
+        </item>
     </group>
-    
+
     <item android:title="">
         <menu>
             <item

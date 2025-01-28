@@ -3,7 +3,7 @@ package com.ehome.enpartesapp
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import com.google.android.material.snackbar.Snackbar
@@ -21,6 +21,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var navigationView: NavigationView
+    private var isSiniestroExpanded = false // Estado del menú Siniestro
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,70 +49,92 @@ class MainActivity : AppCompatActivity() {
         }
 
         val drawerLayout: DrawerLayout = binding.drawerLayout
-        val navView: NavigationView = binding.navView
+        navigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
+
+        // Configurar el AppBarConfiguration
         appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.nav_consultas_abiertas,
-                R.id.nav_reclamos,
-                R.id.nav_presupuestofragment,
+                R.id.nav_gallery,
+                R.id.nav_siniestro,
                 R.id.exitMenuItem
             ), drawerLayout
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
+
         //navView.setupWithNavController(navController)
         // Se activa el NavigationItemSelectedListener para obtener la opcion seleccionada
-        navView.setNavigationItemSelectedListener { menuItem ->
+        // Manejar la selección de ítems del menú
+        navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_consultas_abiertas -> {
-                    navController.navigate(R.id.nav_consultas_abiertas, bundle)
+                    // Navegar al fragmento de consultas abiertas
+                    navController.navigate(R.id.nav_consultas_abiertas)
                 }
-                R.id.nav_presupuestofragment -> {
-                    navController.navigate(R.id.action_nav_consultas_abiertas_to_nav_presupuestofragment, bundle)
+                R.id.nav_siniestro -> {
+                    // Expandir o colapsar el submenú de Siniestro
+                    toggleSiniestroSubmenu()
+                    return@setNavigationItemSelectedListener false // No navegar
                 }
-//                R.id.nav_solicitudes_abiertas -> {
-//                    navController.navigate(R.id.nav_solicitudes_abiertas, bundle)
-//                }
-                // ... other menu items ...
-                else -> false // Handle other menu items or return false if not handled
+                R.id.nav_reportar_siniestro -> {
+                    // Navegar al fragmento de reportar siniestro
+                    navController.navigate(R.id.nav_presupuestofragment)
+                }
+                R.id.nav_consultar_siniestro -> {
+                    // Navegar al fragmento de consultar siniestro
+                    Toast.makeText(this, "Consultar Siniestro", Toast.LENGTH_SHORT).show()
+                }
+                R.id.nav_descargar_pdf_siniestro -> {
+                    // Lógica para descargar PDF
+                    Toast.makeText(this, "Descargar PDF", Toast.LENGTH_SHORT).show()
+                }
+                else -> false // Manejar otros ítems del menú
             }
-            drawerLayout.closeDrawer(GravityCompat.START) // Close the drawer after navigation
-            true// Indicate that the item was handled
+            drawerLayout.closeDrawer(GravityCompat.START) // Cerrar el drawer después de la navegación
+            true // Indicar que el ítem fue manejado
         }
-        // Boton de salida
+
+        // Botón de salida
         val navigationView: NavigationView = findViewById(R.id.nav_view)
         val menu: Menu = navigationView.menu
-        val exitMenuItem: MenuItem = menu.findItem(R.id.exitMenuItem)
+        // Botón de salida
+        val exitMenuItem = navigationView.menu.findItem(R.id.exitMenuItem)
+        exitMenuItem.setOnMenuItemClickListener {
+            // Lógica para salir de la aplicación
+            true
+        }
 
         exitMenuItem.setOnMenuItemClickListener {
             val builder = AlertDialog.Builder(this@MainActivity)
             builder.setTitle("Confirmar salir")
-                .setMessage("¿Esta seguro que desea salir?")
-                .setPositiveButton("Si") { _, _ ->
+                .setMessage("¿Está seguro que desea salir?")
+                .setPositiveButton("Sí") { _, _ ->
                     val intent = Intent(this@MainActivity, LoginActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent)
-                    finish() // Optional: Finish the current activity
+                    finish() // Opcional: Finalizar la actividad actual
                 }
                 .setNegativeButton("No") { dialog, _ ->
                     dialog.dismiss()
                 }
                 .show()
-            true}
+            true
+        }
 
-        // Controlando si presiona retroceder para salir de la aplicacion
+// Controlando si presiona retroceder para salir de la aplicación
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val builder = AlertDialog.Builder(this@MainActivity)
                 builder.setTitle("Confirmar salir")
-                    .setMessage("¿Esta seguro que desea salir?")
-                    .setPositiveButton("Si") { _, _ ->
+                    .setMessage("¿Está seguro que desea salir?")
+                    .setPositiveButton("Sí") { _, _ ->
                         val intent = Intent(this@MainActivity, LoginActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
-                        finish() // Optional: Finish the current activity
+                        finish() // Opcional: Finalizar la actividad actual
                     }
                     .setNegativeButton("No") { dialog, _ ->
                         dialog.dismiss()
@@ -121,8 +145,30 @@ class MainActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     }
 
+    private fun toggleSiniestroSubmenu() {
+        val menu = navigationView.menu
+        val mainMenuItem = menu.findItem(R.id.nav_siniestro) // Obtén el elemento principal de Siniestro
+
+        // Obtén el submenú del elemento principal
+        val submenu = mainMenuItem.subMenu
+
+        // Busca el elemento del grupo dentro del submenú
+        val groupItem = submenu?.findItem(R.id.group_siniestro_submenu)
+
+        if (groupItem != null) {
+            val isVisible = groupItem.isVisible // Obtén la visibilidad actual
+            submenu.setGroupVisible(R.id.group_siniestro_submenu, !isVisible) // Cambia la visibilidad
+            isSiniestroExpanded = !isVisible // Actualiza el estado
+
+            // Si el menú principal de Siniestro está colapsado, oculta el submenú
+            if (!mainMenuItem.isChecked) {
+                submenu.setGroupVisible(R.id.group_siniestro_submenu, false)
+                isSiniestroExpanded = false
+            }
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
         return true
     }

@@ -38,7 +38,7 @@
     <string name="menu_reclamos">Reclamos</string>
     <string name="menu_grupo_solicitudes">Solicitudes</string>
     <string name="menu_solicitudes_abiertas">Solicitudes Abiertas</string>
-    <string name="menu_presupuesto">Solicitar presupuesto</string>
+    <string name="menu_siniestro">Reportar siniestro</string>
     <string name="menu_grupo_piezas">Piezas</string>
     <string name="menu_piezas_abiertas">Piezas Abiertas</string>
     <string name="menu_piezas_por_entregar">Piezas por Entregar</string>

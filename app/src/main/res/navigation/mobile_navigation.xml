@@ -28,15 +28,13 @@
 
         <action
             android:id="@+id/action_nav_reclamos_to_nav_consultas_abiertas"
-            app:destination="@id/nav_consultas_abiertas"
-            app:popUpTo="@id/nav_consultas_abiertas"
-            app:popUpToInclusive="false" />
+            app:destination="@id/nav_consultas_abiertas" />
     </fragment>
 
     <fragment
         android:id="@+id/nav_presupuestofragment"
         android:name="com.ehome.enpartesapp.ui.Presupuesto.PresupuestoFragment"
-        android:label="@string/menu_presupuesto"
+        android:label="@string/menu_siniestro"
         tools:layout="@layout/fragment_presupuesto" >
 
         <action

@@ -94,6 +94,8 @@ class ConsultasAbiertasFragment : Fragment() {
     private var currentResults: String? = null
     private val currentResultContainerState = mutableListOf<String>()
 
+    private var savedQuery: String? = null //Variable para guardar la consulta
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -121,11 +123,10 @@ class ConsultasAbiertasFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Restore state if available (either from savedInstanceState or after returning from ReclamosFragment)
-        if (savedInstanceState != null) {
-            currentLicensePlate = savedInstanceState.getString("licensePlate")
-            currentResults = savedInstanceState.getString("results")
-            currentResultContainerState.addAll(savedInstanceState.getStringArrayList("resultContainerState") ?: emptyList())
+        // Restaurar la consulta y ejecutar la búsqueda
+        if (savedQuery != null) {
+            licensePlateEditText.setText(savedQuery)
+            searchButton.performClick() // Simular el clic del botón al regresar de los reclamos
         }
 
         licensePlateEditText.setText(currentLicensePlate)
@@ -140,8 +141,8 @@ class ConsultasAbiertasFragment : Fragment() {
         super.onSaveInstanceState(outState)
         // Save the state of your views here
         outState.putString("licensePlate", licensePlateEditText.text.toString())
-        outState.putString("results", resultTextView.text.toString())
-        outState.putStringArrayList("resultContainerState", ArrayList(currentResultContainerState))
+//        outState.putString("results", resultTextView.text.toString())
+//        outState.putStringArrayList("resultContainerState", ArrayList(currentResultContainerState))
     }
 
     override fun onDestroyView() {
@@ -163,6 +164,9 @@ class ConsultasAbiertasFragment : Fragment() {
 
         // Prepare the query
         val query = "{\"action\":\"FINDVEHICLE\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"licensePlate\":\"$licensePlate\",\"serialNumber\":\"$licensePlate\"}"
+
+        // Guardar la consulta
+        savedQuery = licensePlate // Guardar solo el texto ingresado
 
         // Make the API request
         CoroutineScope(Dispatchers.IO).launch {
@@ -222,7 +226,7 @@ class ConsultasAbiertasFragment : Fragment() {
                 if (vehicleCarac !=null) {
                     for (carac in vehicleCarac) {
                         // addTextViewToContainer("---------------------------------------------")
-                        addTextViewToContainer(" ")
+//                        addTextViewToContainer(" ")
                         // addTextViewToContainer("vehicleId: ${vehicleInfo.vehicleId}")
                         addTextViewToContainer("Marca: ${vehicleInfo.brandName}")
                         addTextViewToContainer("Modelo: ${vehicleInfo.modelName}")
@@ -249,6 +253,8 @@ class ConsultasAbiertasFragment : Fragment() {
                         addTextViewToContainer("Placa: ${vehicleInfo.licensePlate}")
                         addTextViewToContainer("serial: ${vehicleInfo.serialNumber}")
                         addTextViewToContainer("vin: ${vehicleInfo.vin}")
+
+                        currentResultContainerState.add(" ")
 
                         // Create and add the button
                         val selectButton = Button(requireContext())
@@ -288,8 +294,32 @@ class ConsultasAbiertasFragment : Fragment() {
 
     private fun restoreResultContainerState() {
         resultContainer.removeAllViews()
-        for (text in currentResultContainerState) {
-            addTextViewToContainer(text)
+        val stateCopy = currentResultContainerState.toList()
+        if (stateCopy.isNotEmpty()) { // Only add buttons if there are results
+            var addButton = false // Flag to control button addition
+            for (text in stateCopy) {
+                if (text == " ") {
+                    addButton = true // Set the flag to add a button after the next text view
+                } else {
+                    addTextViewToContainer(text)
+                    if (addButton) {
+                        // Create and add the button
+                        val selectButton = Button(requireContext())
+                        selectButton.text = "Seleccionar"
+                        // ... (Add your button click listener here) ...
+//                        resultContainer.addView(selectButton)
+//                        addButton = false // Reset the flag
+                        // Add the button click listener here
+                        selectButton.setOnClickListener {
+                            // Handle button click (e.g., log the characteristic)
+                            // ... (Your existing button click logic) ...
+                        }
+                        resultContainer.addView(selectButton)
+                        addButton = false // Reset the flag
+                    }
+                }
+            }
         }
     }
 }
+

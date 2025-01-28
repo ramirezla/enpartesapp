@@ -107,12 +107,6 @@ class ReclamosFragment : Fragment() {
                                         )
                                 }
 
-                                // Add Claim ID TextView
-//                                val claimIdTextView = TextView(requireContext()).apply {
-//                                    text = "Claim ID: ${claim.claimId}"
-//                                }
-//                                claimLayout.addView(claimIdTextView)
-
                                 // Add snumerosolicitud TextView
                                 val snumerosolicitudTextView = TextView(requireContext()).apply {
                                     text = "ID Solicitud: ${claim.snumerosolicitud}"
@@ -169,12 +163,6 @@ class ReclamosFragment : Fragment() {
                     }
                 }
             }
-        }
-
-        // Now that the layout is inflated, we can find the button
-        binding.backToMainButton.setOnClickListener {
-            // Navigate back to MainActivity, popping up to ConsultasAbiertasFragment
-            findNavController().navigate(R.id.action_nav_reclamos_to_nav_consultas_abiertas)
         }
     }
 

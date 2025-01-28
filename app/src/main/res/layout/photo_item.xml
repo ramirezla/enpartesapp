@@ -16,7 +16,7 @@
         android:id="@+id/uploadPhotoIcon"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:src="@android:drawable/ic_menu_upload" />
+        android:src="@drawable/images_icon" />
 
     <ImageView
         android:id="@+id/photoPreview"
