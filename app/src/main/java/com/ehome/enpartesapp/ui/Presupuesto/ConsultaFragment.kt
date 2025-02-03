@@ -424,41 +424,6 @@ class ConsultaFragment : Fragment() {
         }
     }
 
-//    // Guarda el archivo PDF en la carpeta de Descargas
-//    private fun savePdfToDownloads(fileName: String, pdfBytes: ByteArray) {
-//        val contentValues = ContentValues().apply {
-//            put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-//            put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
-//            }
-//        }
-//
-//        val resolver = context?.contentResolver
-//
-//        val uri: Uri? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//            resolver?.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-//        } else {
-//            TODO("VERSION.SDK_INT < Q")
-//        }
-//
-//        uri?.let {
-//            try {
-//                if (resolver != null) {
-//                    resolver.openOutputStream(uri)?.use { outputStream: OutputStream? ->
-//                        outputStream?.write(pdfBytes)
-//                    }
-//                }
-//                showToast("Archivo guardado en Descargas")
-//            } catch (e: IOException) {
-//                e.printStackTrace()
-//                showToast("Error al guardar el archivo")
-//            }
-//        } ?: run {
-//            showToast("No se pudo crear el archivo")
-//        }
-//    }
-
     // Muestra un Toast con un mensaje
     private fun showToast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()

@@ -17,7 +17,9 @@ import java.util.Date
 import java.util.Locale
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.icu.util.Calendar
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -28,11 +30,8 @@ import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContentProviderCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.ehome.enpartesapp.R
 import com.google.android.material.textfield.TextInputEditText
@@ -40,13 +39,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.Call
+import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.lang.StringBuilder
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -143,7 +147,9 @@ class FotoAdapter(
 
 class PresupuestoFragment : Fragment() {
 
-    private val fotoList = mutableListOf(FotoItem())
+    //private val fotoList = mutableListOf(FotoItem())
+    private var fotoList: MutableList<FotoItem> = mutableListOf()
+    private var caseToken: String? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: FotoAdapter
     private var currentPhotoUri: Uri? = null // URI de la foto actual
@@ -176,7 +182,7 @@ class PresupuestoFragment : Fragment() {
     private lateinit var btnAceptar: Button
 
     // Variable para almacenar el caseToken
-    private var caseToken: String? = null
+    //private var caseToken: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -304,6 +310,7 @@ class PresupuestoFragment : Fragment() {
 
         // Reiniciar el Spinner
         spinnerTipoVehiculo.setSelection(0)
+        spinnerTipoFotoVin.setSelection(0)
 
         // Limpiar la lista de fotos
         fotoList.clear()
@@ -342,9 +349,49 @@ class PresupuestoFragment : Fragment() {
         return imgFotoVin.drawable.constantState != defaultDrawable
     }
 
+//    private fun validarFotosVehiculo(): Boolean {
+//        // Validar que se haya agregado al menos una foto del vehículo
+//        if (fotoList.any { it.imagenUri != null }) {
+//            // Si hay al menos una foto, puedes agregar más validaciones aquí
+//            // Por ejemplo, si necesitas que haya una foto de cada tipo:
+//            //val tiposDeFoto = listOf("front", "back", "left", "right") // Agrega los tipos que necesitas
+//            //return tiposDeFoto.all { tipo -> fotoList.any { it.tipoFoto == tipo && it.imagenUri != null } }
+//            val tiposDeFoto = listOf("front_left",
+//                "front",
+//                "front_right",
+//                "left",
+//                "right",
+//                "back_left",
+//                "back_right",
+//                "back",
+//                "front_side_grilled",
+//                "front_side_hood",
+//                "front_side_left_bumper",
+//                "front_side_left_head_light",
+//                "front_side_right_bumper",
+//                "front_side_right_head_light",
+//                "front_side_windshield",
+//                "left_side_fender",
+//                "left_side_front_left_door",
+//                "left_side_front_left_tyre",
+//                "left_side_front_left_window",
+//                "left_side_quarter_panel",
+//                "left_side_rear_left_door")
+//            return tiposDeFoto.all { tipo -> fotoList.any { it.tipoFoto == tipo && it.imagenUri != null } }
+//        }
+//        return false
+//    }
+
     private fun validarFotosVehiculo(): Boolean {
         // Validar que se haya agregado al menos una foto del vehículo
-        return fotoList.any { it.imagenUri != null }
+        if (fotoList.any { it.imagenUri != null }) {
+            // Si hay al menos una foto, puedes agregar más validaciones aquí
+            // Por ejemplo, si necesitas que haya una foto de cada tipo:
+            //val tiposDeFoto = listOf("front", "back", "left", "right") // Agrega los tipos que necesitas
+            //return tiposDeFoto.all { tipo -> fotoList.any { it.tipoFoto == tipo && it.imagenUri != null } }
+            return true
+        }
+        return false
     }
 
     private fun procesarDatos() {
@@ -408,18 +455,12 @@ class PresupuestoFragment : Fragment() {
                             val caseTokenObject = jsonResponse.getJSONObject("caseToken")
                             caseToken = caseTokenObject.getString("caseTokenValue")
 
-//                            Toast.makeText(
-//                                requireContext(),
-//                                "Datos enviados correctamente. caseToken: $caseToken",
-//                                Toast.LENGTH_LONG
-//                            ).show()
-//                            Log.d("PresupuestoFragment", "Respuesta del servidor: $responseBody")
-//                            Log.d("PresupuestoFragment", "caseToken: $caseToken")
-
                             // Llamar a la función para enviar las fotos
                             // Crear una variable local para evitar problemas de smart cast
                             val token = caseToken
+                            //val token = "GG87jCWGoAqAoykNLxCgYZQ7"  // borrar luego de pasar las pruebas
                             if (token != null) {
+                                //showConfirmationDialog(token)
                                 enviarFotosAlServidor(token)
                                 showDialog("Datos enviados correctamente. caseToken: $caseToken")
                             } else {
@@ -459,6 +500,46 @@ class PresupuestoFragment : Fragment() {
         }
     }
 
+    private fun showConfirmationDialog(token: String) {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Confirmar envío de fotos")
+
+        // Crear un mensaje con la información de las fotosval message = StringBuilder()
+        val message = StringBuilder()
+        message.append("Fotos a enviar:\n")
+        message.append("--------------------\n")
+
+        // Agregar la foto del VIN
+        if (imgFotoVin.drawable != null) {
+            message.append("vin_number: vin_number.jpg\n")
+        }
+
+        // Agregar las fotos del vehículo
+        fotoList.forEachIndexed { index, fotoItem ->
+            if (fotoItem.imagenUri != null) {
+                message.append("${fotoItem.tipoFoto}: foto_$index.jpg\n")
+            }}
+
+        // Configurar el mensaje del diálogo
+        builder.setMessage(message.toString())
+
+        // Configurar el botón positivo (Enviar)
+        builder.setPositiveButton("Enviar") { dialog, _ ->
+            // Enviar las fotos al servidor
+            enviarFotosAlServidor(token)
+            dialog.dismiss()
+        }
+
+        // Configurar el botón negativo (Cancelar)
+        builder.setNegativeButton("Cancelar") { dialog, _ ->
+            // Cancelar el envío
+            dialog.dismiss()
+        }
+
+        // Mostrar el diálogo
+        builder.show()
+    }
+
     private fun mostrarDatePicker() {
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
@@ -480,7 +561,7 @@ class PresupuestoFragment : Fragment() {
 
     private fun tomarFotoVinNumber() {
         val photoFile: File? = try {
-            crearArchivoTemporal()
+            crearArchivoTemporal("vin_number")
         } catch (ex: IOException) {
             Toast.makeText(requireContext(), "Error al crear el archivo", Toast.LENGTH_SHORT).show()
             null
@@ -534,18 +615,21 @@ class PresupuestoFragment : Fragment() {
         }
     }
 
-    private fun crearArchivoTemporal(): File {
+    // Vamos a crear un archivo con un nombre específico basado en el tipo de foto.
+    // TODO: crear el nombre del vin_number asignandole un timestamp para evitar colisiones
+    private fun crearArchivoTemporal(tipoFoto: String): File {
         val storageDir: File? = requireContext().getExternalFilesDir(null)
-        return File.createTempFile(
-            "JPEG_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}_",
-            ".jpg",
-            storageDir
-        )
+        val nombreArchivo = when (tipoFoto) {
+            "vin_number" -> "vin_number.jpg"
+            else -> "${tipoFoto}_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.jpg"
+        }
+        return File(storageDir, nombreArchivo)
     }
 
     private fun tomarFoto(position: Int) {
+        val tipoFoto = fotoList[position].tipoFoto
         val photoFile: File? = try {
-            crearArchivoTemporal()
+            crearArchivoTemporal(tipoFoto)
         } catch (ex: IOException) {
             Toast.makeText(requireContext(), "Error al crear el archivo", Toast.LENGTH_SHORT).show()
             null
@@ -565,6 +649,9 @@ class PresupuestoFragment : Fragment() {
         uploadPhotoLauncher.launch("image/*") // Usar el launcher para subir la imagen
     }
 
+    // usar el método enqueue() en lugar de execute() para realizar la llamada de
+    // forma asíncrona. enqueue() no bloquea el hilo y utiliza un callback para
+    // manejar la respuesta cuando esté disponible.
     private fun enviarFotosAlServidor(caseToken: String) {
         // Obtener el tipo de vehículo seleccionado
         val carType = spinnerTipoVehiculo.selectedItem.toString()
@@ -575,23 +662,26 @@ class PresupuestoFragment : Fragment() {
             .addFormDataPart("car_type", carType) // Campo obligatorio: tipo de vehículo
             .apply {
                 // Agregar la foto del VIN
-                val vinPhotoFile = obtenerArchivoDeUri(imgFotoVin.drawable.toBitmap())
-                if (vinPhotoFile != null) {
-                    addFormDataPart(
-                        "vin_number", // Clave para la foto del VIN
-                        "vin_number.jpg", // Nombre del archivo
-                        vinPhotoFile.asRequestBody("image/jpeg".toMediaType())
-                    )
+                if (imgFotoVin.drawable is BitmapDrawable) {
+                    val vinBitmap = (imgFotoVin.drawable as BitmapDrawable).bitmap
+                    val vinPhotoFile = obtenerArchivoDeUri(getImageUri(requireContext(), vinBitmap), "vin_number")
+                    if (vinPhotoFile != null) {
+                        addFormDataPart(
+                            "vin_number", // Clave para la foto del VIN
+                            "vin_number.jpg", // Nombre del archivo
+                            vinPhotoFile.asRequestBody("image/jpeg".toMediaType())
+                        )
+                    }
                 }
 
                 // Agregar las fotos del vehículo
                 fotoList.forEachIndexed { index, fotoItem ->
                     if (fotoItem.imagenUri != null) {
-                        val photoFile = obtenerArchivoDeUri(fotoItem.imagenUri!!)
+                        val photoFile = obtenerArchivoDeUri(fotoItem.imagenUri!!, fotoItem.tipoFoto)
                         if (photoFile != null) {
                             addFormDataPart(
                                 fotoItem.tipoFoto, // Clave para la foto (ej: front, left, right)
-                                "foto_$index.jpg", // Nombre del archivo
+                                photoFile.name, // Nombre del archivo
                                 photoFile.asRequestBody("image/jpeg".toMediaType())
                             )
                         }
@@ -606,17 +696,26 @@ class PresupuestoFragment : Fragment() {
             .post(body)
             .build()
 
-        // Ejecutar la solicitud en un hilo secundario
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val client = OkHttpClient()
-                val response = client.newCall(request).execute()
+        // Crear el cliente OkHttp
+        val client = OkHttpClient()
 
-                withContext(Dispatchers.Main) {
+        // Ejecutar la solicitud de forma asíncrona
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                // Manejar el error en el hilo principal
+                requireActivity().runOnUiThread {
+                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Log.e("PresupuestoFragment", "Error: ${e.message}", e)
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                // Manejar la respuesta en el hilo principal
+                requireActivity().runOnUiThread {
                     if (response.isSuccessful) {
                         // La solicitud fue exitosa (código 200)
                         val responseBody = response.body?.string()
-                        Toast.makeText(requireContext(), "Fotos enviadas correctamente", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Fotos enviadas correctamente, Ten en cuenta que la evaluación puede tardar entre 10 y 15 minutos.", Toast.LENGTH_SHORT).show()
                         Log.d("PresupuestoFragment", "Respuesta del servidor: $responseBody")
                     } else {
                         // La solicitud falló (códigos 400, 500, etc.)
@@ -629,29 +728,29 @@ class PresupuestoFragment : Fragment() {
                         Log.e("PresupuestoFragment", "Error en la solicitud: ${response.code} - ${response.body?.string()}")
                     }
                 }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    // Ocurrió un error
-                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                    Log.e("PresupuestoFragment", "Error: ${e.message}", e)
-                }
             }
+        })
+    }
+
+    private fun obtenerArchivoDeUri(uri: Uri, tipoFoto: String): File? {
+        return try {
+            val photoFile = crearArchivoTemporal(tipoFoto)
+            val inputStream = requireContext().contentResolver.openInputStream(uri)
+            photoFile.outputStream().use { output ->
+                inputStream?.copyTo(output)
+            }
+            photoFile
+        } catch (e: Exception) {
+            Log.e("PresupuestoFragment", "Error al convertir URI a archivo: ${e.message}", e)
+            null
         }
     }
 
-    // Función para convertir una URI en un archivo
-    private fun obtenerArchivoDeUri(uri: Uri): File? {
-        return try {
-            val inputStream = requireContext().contentResolver.openInputStream(uri)
-            val file = File.createTempFile("temp_photo", ".jpg", requireContext().cacheDir)
-            file.outputStream().use { output ->
-                inputStream?.copyTo(output)
-            }
-            file
-        } catch (e: Exception) {
-            Log.e("PresupuestoFragment", "Error al convertir URI a archivo: ${e.message}")
-            null
-        }
+    private fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
+        val bytes = ByteArrayOutputStream()
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        val path = MediaStore.Images.Media.insertImage(inContext.contentResolver, inImage, "Title", null)
+        return Uri.parse(path)
     }
 
     // Función para convertir un Bitmap en un archivo
@@ -666,11 +765,6 @@ class PresupuestoFragment : Fragment() {
             Log.e("PresupuestoFragment", "Error al convertir Bitmap a archivo: ${e.message}")
             null
         }
-    }
-
-    companion object {
-        private const val REQUEST_TAKE_PHOTO = 1
-        private const val REQUEST_UPLOAD_PHOTO = 2
     }
 
     private fun showDialog(message: String) {
@@ -706,7 +800,18 @@ Datos de ejemplo:
 "VINnumber":"YV1MV36V1K2601947",
 "Language":"en"
 
-Casenumber: OLIM4-toyo
-caseToken: AwdPSjrr93Vgxku2jn18ALLX
+Casenumber: OLIM4-03022025
+caseToken: 2tiWaxsBZbN39fQ4yPFsDCDE
+
+GG87jCWGoAqAoykNLxCgYZQ7
+
+Casenumber: OLIM4-03022025-2
+caseToken: vwZxPxpkpzb3HasGtc3JZfn4
+
+Casenumber: OLIM4-03022025-3
+caseToken: Fa6j3spsARhqRFb7AYiry1iA
+
+CaseNumber: OLIM4-Duster
+casetoken; bPq2r6Sr5vDYs1N9mDJQess1
  */
 
