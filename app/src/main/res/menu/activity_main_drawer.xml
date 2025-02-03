@@ -16,7 +16,7 @@
         <item
             android:id="@+id/nav_gallery"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:title="Usuario" />
         <item
             android:id="@+id/nav_siniestro"
             android:icon="@drawable/car_crash_2_icon"
@@ -25,13 +25,10 @@
                 <group android:id="@+id/group_siniestro_submenu"> <!-- Agrega el ID aquí -->
                     <item
                         android:id="@+id/nav_reportar_siniestro"
-                        android:title="Reportar" />
+                        android:title="      Reportar" />
                     <item
                         android:id="@+id/nav_consultar_siniestro"
-                        android:title="Consultar" />
-                    <item
-                        android:id="@+id/nav_descargar_pdf_siniestro"
-                        android:title="Descargar PDF" />
+                        android:title="      Consultar" />
                 </group>
             </menu>
         </item>

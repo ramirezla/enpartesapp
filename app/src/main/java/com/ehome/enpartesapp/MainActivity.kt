@@ -36,11 +36,12 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.appBarMain.toolbar)
 
-        binding.appBarMain.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
-        }
+        // mostrar el icono flotante del correo
+//        binding.appBarMain.fab.setOnClickListener { view ->
+//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                .setAction("Action", null)
+//                .setAnchorView(R.id.fab).show()
+//        }
 
         // Se crea un bundle con los parametros que se desea pasar al fragment
         val bundle = Bundle().apply {
@@ -85,12 +86,12 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_consultar_siniestro -> {
                     // Navegar al fragmento de consultar siniestro
-                    Toast.makeText(this, "Consultar Siniestro", Toast.LENGTH_SHORT).show()
+                    navController.navigate(R.id.nav_consultafragment)
                 }
-                R.id.nav_descargar_pdf_siniestro -> {
-                    // Lógica para descargar PDF
-                    Toast.makeText(this, "Descargar PDF", Toast.LENGTH_SHORT).show()
-                }
+//                R.id.nav_descargar_pdf_siniestro -> {
+//                    // Lógica para descargar PDF
+//                    Toast.makeText(this, "Descargar PDF", Toast.LENGTH_SHORT).show()
+//                }
                 else -> false // Manejar otros ítems del menú
             }
             drawerLayout.closeDrawer(GravityCompat.START) // Cerrar el drawer después de la navegación
