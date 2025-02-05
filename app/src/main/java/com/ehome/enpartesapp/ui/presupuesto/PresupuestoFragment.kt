@@ -1,4 +1,4 @@
-package com.ehome.enpartesapp.ui.Presupuesto
+package com.ehome.enpartesapp.ui.presupuesto
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -31,7 +31,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.recyclerview.widget.RecyclerView
 import com.ehome.enpartesapp.R
 import com.google.android.material.textfield.TextInputEditText
@@ -50,11 +49,11 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
-import java.lang.StringBuilder
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  * Que datos son obligatorios?
+ * Obligatorio minimo 1 foto?
  * Se puede enviar varias fotos del mismo tipo?
  */
 
@@ -330,17 +329,29 @@ class PresupuestoFragment : Fragment() {
         }
     }
 
+//    private fun validarCampos(): Boolean {
+//        // Validar que todos los campos de texto estén llenos
+//        if (etCaseNumber.text.isNullOrEmpty() ||
+//            etFullName.text.isNullOrEmpty() ||
+//            etEmail.text.isNullOrEmpty() ||
+//            etDateOfInspection.text.isNullOrEmpty() ||
+//            etVINnumber.text.isNullOrEmpty() ||
+//            etLanguage.text.isNullOrEmpty()) {
+//            return false
+//        }
+//        return true
+//    }
+
     private fun validarCampos(): Boolean {
-        // Validar que todos los campos de texto estén llenos
-        if (etCaseNumber.text.isNullOrEmpty() ||
-            etFullName.text.isNullOrEmpty() ||
-            etEmail.text.isNullOrEmpty() ||
-            etDateOfInspection.text.isNullOrEmpty() ||
-            etVINnumber.text.isNullOrEmpty() ||
-            etLanguage.text.isNullOrEmpty()) {
-            return false
-        }
-        return true
+        val campos = listOf(
+            etCaseNumber.text,
+            etFullName.text,
+            etEmail.text,
+            etDateOfInspection.text,
+            etVINnumber.text,
+            etLanguage.text
+        )
+        return campos.all { !it.isNullOrEmpty() }
     }
 
     private fun validarFotoVin(): Boolean {
@@ -382,16 +393,42 @@ class PresupuestoFragment : Fragment() {
 //        return false
 //    }
 
+//    private fun validarFotosVehiculo(): Boolean {
+//        // Validar que se haya agregado al menos una foto del vehículo
+//        if (fotoList.any { it.imagenUri != null }) {
+//            // Si hay al menos una foto, puedes agregar más validaciones aquí
+//            // Por ejemplo, si necesitas que haya una foto de cada tipo:
+//            //val tiposDeFoto = listOf("front", "back", "left", "right") // Agrega los tipos que necesitas
+//            //return tiposDeFoto.all { tipo -> fotoList.any { it.tipoFoto == tipo && it.imagenUri != null } }
+//            return true
+//        }
+//        return false
+//    }
+
     private fun validarFotosVehiculo(): Boolean {
-        // Validar que se haya agregado al menos una foto del vehículo
-        if (fotoList.any { it.imagenUri != null }) {
-            // Si hay al menos una foto, puedes agregar más validaciones aquí
-            // Por ejemplo, si necesitas que haya una foto de cada tipo:
-            //val tiposDeFoto = listOf("front", "back", "left", "right") // Agrega los tipos que necesitas
-            //return tiposDeFoto.all { tipo -> fotoList.any { it.tipoFoto == tipo && it.imagenUri != null } }
-            return true
-        }
-        return false
+        val tiposDeFoto = listOf("front_left",
+            "front",
+            "front_right",
+            "left",
+            "right",
+            "back_left",
+            "back_right",
+            "back",
+            "front_side_grilled",
+            "front_side_hood",
+            "front_side_left_bumper",
+            "front_side_left_head_light",
+            "front_side_right_bumper",
+            "front_side_right_head_light",
+            "front_side_windshield",
+            "left_side_fender",
+            "left_side_front_left_door",
+            "left_side_front_left_tyre",
+            "left_side_front_left_window",
+            "left_side_quarter_panel",
+            "left_side_rear_left_door") // Agrega los tipos que necesitas
+        // Retorna true si hay al menos una foto con imagenUri no nulo y si se cumplen los tipos de fotos, false de lo contrario
+        return fotoList.any { it.imagenUri != null } && tiposDeFoto.all { tipo -> fotoList.any { it.tipoFoto == tipo && it.imagenUri != null } }
     }
 
     private fun procesarDatos() {
@@ -500,45 +537,45 @@ class PresupuestoFragment : Fragment() {
         }
     }
 
-    private fun showConfirmationDialog(token: String) {
-        val builder = AlertDialog.Builder(requireContext())
-        builder.setTitle("Confirmar envío de fotos")
-
-        // Crear un mensaje con la información de las fotosval message = StringBuilder()
-        val message = StringBuilder()
-        message.append("Fotos a enviar:\n")
-        message.append("--------------------\n")
-
-        // Agregar la foto del VIN
-        if (imgFotoVin.drawable != null) {
-            message.append("vin_number: vin_number.jpg\n")
-        }
-
-        // Agregar las fotos del vehículo
-        fotoList.forEachIndexed { index, fotoItem ->
-            if (fotoItem.imagenUri != null) {
-                message.append("${fotoItem.tipoFoto}: foto_$index.jpg\n")
-            }}
-
-        // Configurar el mensaje del diálogo
-        builder.setMessage(message.toString())
-
-        // Configurar el botón positivo (Enviar)
-        builder.setPositiveButton("Enviar") { dialog, _ ->
-            // Enviar las fotos al servidor
-            enviarFotosAlServidor(token)
-            dialog.dismiss()
-        }
-
-        // Configurar el botón negativo (Cancelar)
-        builder.setNegativeButton("Cancelar") { dialog, _ ->
-            // Cancelar el envío
-            dialog.dismiss()
-        }
-
-        // Mostrar el diálogo
-        builder.show()
-    }
+//    private fun showConfirmationDialog(token: String) {
+//        val builder = AlertDialog.Builder(requireContext())
+//        builder.setTitle("Confirmar envío de fotos")
+//
+//        // Crear un mensaje con la información de las fotosval message = StringBuilder()
+//        val message = StringBuilder()
+//        message.append("Fotos a enviar:\n")
+//        message.append("--------------------\n")
+//
+//        // Agregar la foto del VIN
+//        if (imgFotoVin.drawable != null) {
+//            message.append("vin_number: vin_number.jpg\n")
+//        }
+//
+//        // Agregar las fotos del vehículo
+//        fotoList.forEachIndexed { index, fotoItem ->
+//            if (fotoItem.imagenUri != null) {
+//                message.append("${fotoItem.tipoFoto}: foto_$index.jpg\n")
+//            }}
+//
+//        // Configurar el mensaje del diálogo
+//        builder.setMessage(message.toString())
+//
+//        // Configurar el botón positivo (Enviar)
+//        builder.setPositiveButton("Enviar") { dialog, _ ->
+//            // Enviar las fotos al servidor
+//            enviarFotosAlServidor(token)
+//            dialog.dismiss()
+//        }
+//
+//        // Configurar el botón negativo (Cancelar)
+//        builder.setNegativeButton("Cancelar") { dialog, _ ->
+//            // Cancelar el envío
+//            dialog.dismiss()
+//        }
+//
+//        // Mostrar el diálogo
+//        builder.show()
+//    }
 
     private fun mostrarDatePicker() {
         val calendar = Calendar.getInstance()
@@ -579,7 +616,7 @@ class PresupuestoFragment : Fragment() {
 
     private fun configurarSpinnerVinNumber() {
         val tiposFoto = arrayOf("vin_number") // Solo un valor por ahora
-        val adapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_item, tiposFoto) // Especifica el tipo <String>
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, tiposFoto) // Especifica el tipo <String>
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerTipoFotoVin.adapter = adapter
     }
@@ -593,7 +630,7 @@ class PresupuestoFragment : Fragment() {
         // Listener para manejar la selección del tipo de vehículo
         spinnerTipoVehiculo.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val tipoSeleccionado = tiposVehiculo[position]
+                //val tipoSeleccionado = tiposVehiculo[position]
                 // Aquí puedes guardar el tipo de vehículo seleccionado si es necesario
             }
 
@@ -675,7 +712,35 @@ class PresupuestoFragment : Fragment() {
                 }
 
                 // Agregar las fotos del vehículo
-                fotoList.forEachIndexed { index, fotoItem ->
+//                fotoList.forEachIndexed { index, fotoItem ->
+//                    if (fotoItem.imagenUri != null) {
+//                        val photoFile = obtenerArchivoDeUri(fotoItem.imagenUri!!, fotoItem.tipoFoto)
+//                        if (photoFile != null) {
+//                            addFormDataPart(
+//                                fotoItem.tipoFoto, // Clave para la foto (ej: front, left, right)
+//                                photoFile.name, // Nombre del archivo
+//                                photoFile.asRequestBody("image/jpeg".toMediaType())
+//                            )
+//                        }
+//                    }
+//                }
+
+//                El índice no se va a usar.
+//                fotoList.forEachIndexed { _, fotoItem ->
+//                    if (fotoItem.imagenUri != null) {
+//                        val photoFile = obtenerArchivoDeUri(fotoItem.imagenUri!!, fotoItem.tipoFoto)
+//                        if (photoFile != null) {
+//                            addFormDataPart(
+//                                fotoItem.tipoFoto, // Clave para la foto (ej: front, left, right)
+//                                photoFile.name, // Nombre del archivo
+//                                photoFile.asRequestBody("image/jpeg".toMediaType())
+//                            )
+//                        }
+//                    }
+//                }
+
+                // iterar sobre una lista cuando solo necesitas el elemento y no el índice.
+                fotoList.forEach { fotoItem ->
                     if (fotoItem.imagenUri != null) {
                         val photoFile = obtenerArchivoDeUri(fotoItem.imagenUri!!, fotoItem.tipoFoto)
                         if (photoFile != null) {
@@ -754,18 +819,18 @@ class PresupuestoFragment : Fragment() {
     }
 
     // Función para convertir un Bitmap en un archivo
-    private fun obtenerArchivoDeUri(bitmap: Bitmap): File? {
-        return try {
-            val file = File.createTempFile("temp_photo", ".jpg", requireContext().cacheDir)
-            file.outputStream().use { output ->
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
-            }
-            file
-        } catch (e: Exception) {
-            Log.e("PresupuestoFragment", "Error al convertir Bitmap a archivo: ${e.message}")
-            null
-        }
-    }
+//    private fun obtenerArchivoDeUri(bitmap: Bitmap): File? {
+//        return try {
+//            val file = File.createTempFile("temp_photo", ".jpg", requireContext().cacheDir)
+//            file.outputStream().use { output ->
+//                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, output)
+//            }
+//            file
+//        } catch (e: Exception) {
+//            Log.e("PresupuestoFragment", "Error al convertir Bitmap a archivo: ${e.message}")
+//            null
+//        }
+//    }
 
     private fun showDialog(message: String) {
         AlertDialog.Builder(requireContext()) // Usar requireContext() directamente
@@ -782,13 +847,13 @@ class PresupuestoFragment : Fragment() {
     }
 
     // Función para mostrar un diálogo de error
-    private fun showErrorDialog(message: String) {
-        AlertDialog.Builder(requireContext())
-            .setTitle("Error")
-            .setMessage(message)
-            .setPositiveButton("Aceptar") { dialog, _ -> dialog.dismiss() }
-            .show()
-    }
+//    private fun showErrorDialog(message: String) {
+//        AlertDialog.Builder(requireContext())
+//            .setTitle("Error")
+//            .setMessage(message)
+//            .setPositiveButton("Aceptar") { dialog, _ -> dialog.dismiss() }
+//            .show()
+//    }
 }
 
 /*

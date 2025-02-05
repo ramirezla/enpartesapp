@@ -1,27 +1,24 @@
-package com.ehome.enpartesapp.ui.Presupuesto
+package com.ehome.enpartesapp.ui.presupuesto
 
 import android.Manifest
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
-import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -33,20 +30,21 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.File
 import java.io.IOException
-import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 class ConsultaFragment : Fragment() {
 
-    private val REQUEST_CODE_PERMISSIONS = 101
+    private val requestCodePermissions = 101
+
+    // Usamos ActivityResultLauncher para manejar los permisos
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
     private lateinit var etCaseNumber: EditText
     private lateinit var etCaseToken: EditText
@@ -75,6 +73,17 @@ class ConsultaFragment : Fragment() {
             downloadPdf()
         }
 
+        // Inicializamos el ActivityResultLauncher para los permisos
+        requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                // Permiso concedido, procedemos a descargar el PDF
+                downloadPdf()
+            } else {
+                // Permiso denegado, mostramos un mensaje al usuario
+                showErrorDialog(getString(R.string.permiso_de_almacenamiento_denegado))
+            }
+        }
+
         return view
     }
 
@@ -87,13 +96,12 @@ class ConsultaFragment : Fragment() {
 
         // Validar que al menos uno de los campos esté lleno
         if (caseNumber.isEmpty() && caseToken.isEmpty()) {
-            //Toast.makeText(requireContext(), "Debe ingresar un Case Number o un Case Token", Toast.LENGTH_SHORT).show()
-            showErrorDialog("Debe ingresar un Case Number o un Case Token.")
+            showErrorDialog(getString(R.string.ingresar_case_number_token))
             return
         }
 
         if (caseNumber.isEmpty()) {
-            showErrorDialog("Debe ingresar un Case Number para descargar el PDF.")
+            showErrorDialog(getString(R.string.debe_ingresar_case_number_token_para_descargar_el_pdf))
             return
         }
 
@@ -108,7 +116,6 @@ class ConsultaFragment : Fragment() {
         val client = OkHttpClient()
         val mediaType = "application/json".toMediaType()
         val body = jsonString.toRequestBody(mediaType)
-        //val body = "{\n    \"case_number\": \"OLIM3\",\n    \"case_token\": \"\"\n}".toRequestBody(mediaType)
 
         val request = Request.Builder()
             .url(url)
@@ -126,30 +133,29 @@ class ConsultaFragment : Fragment() {
                         // Respuesta exitosa (200 OK)
                         val jsonResponse = JSONObject(responseBody ?: "")
                         displayFormattedData(jsonResponse)
-                        Log.d("ConsultaFragment", "Respuesta del servidor: $jsonResponse")
-                        // Procesar el JSON y mostrar los datos
-                        // Ejemplo:
-                        // val pdfUrl = jsonResponse.getString("pdf_url")
-                        // val data = jsonResponse.getJSONObject("data")
-                        // ...
+                        Log.d("ConsultaFragment", getString(R.string.respuesta_del_servidor, jsonResponse))
+                        //Log.d("ConsultaFragment", "Respuesta del servidor: $jsonResponse")
+
                     } else {
                         // Respuesta con error (400, 404, 500)
                         val errorMessage = when (response.code) {
-                            400 -> "Solicitud incorrecta. Verifique los datos ingresados."
-                            404 -> "No se encontró información del caso. Ten en cuenta que la evaluación puede tardar entre 10 y 15 minutos. Por favor, intenta nuevamente más tarde."
-                            500 -> "Error interno del servidor."
-                            else -> "Error desconocido: ${response.code}"
+                            400 -> getString(R.string.solicitud_incorrecta_verifique_los_datos)
+                            404 -> getString(R.string.esperar_10_a_15_minutos)
+                            500 -> getString(R.string.error_interno_del_servidor)
+                            else -> getString(R.string.error_desconocido, response.code)
                         }
                         showErrorDialog(errorMessage)
-                        Log.e("ConsultaFragment", "Error en la solicitud: ${response.code} - $responseBody")
+                        //Log.e("ConsultaFragment", "Error en la solicitud: ${response.code} - $responseBody")
+                        Log.e("ConsultaFragment", getString(R.string.error_en_la_solicitud, response.code, responseBody))
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     val errorTextView = TextView(requireContext())
-                    errorTextView.text = "Error: ${e.message}"
+                    errorTextView.text = getString(R.string.error_message, e.message)
                     llResultContainer.addView(errorTextView)
-                    Log.e("ConsultaFragment", "Error: ${e.message}", e)
+                    //Log.e("ConsultaFragment", "Error: ${e.message}", e)
+                    Log.e("ConsultaFragment", getString(R.string.error, e.message))
                 }
             }
         }
@@ -157,7 +163,7 @@ class ConsultaFragment : Fragment() {
 
     private fun displayFormattedData(jsonResponse: JSONObject) {
         val mainTitle = TextView(requireContext())
-        mainTitle.text = "MotionsCloud Vehicle Assessment Report\nPowered by AI Computer Vision Technologies"
+        mainTitle.text = getString(R.string.AI_cloud)
         llResultContainer.addView(mainTitle)
 
         val data = jsonResponse.getJSONObject("data")
@@ -167,11 +173,12 @@ class ConsultaFragment : Fragment() {
         val laborRate = data.getString("labor_rate")
 
         val generalInfo = TextView(requireContext())
-        generalInfo.text = "case_number: $caseNumber\nvin_number: $vinNumber\nDetalles: (p_labor_rate: $pLaborRate, labor_rate: $laborRate)"
+        //generalInfo.text = "case_number: $caseNumber\nvin_number: $vinNumber\nDetalles: (p_labor_rate: $pLaborRate, labor_rate: $laborRate)"
+        generalInfo.text = getString(R.string.general_info_format, caseNumber, vinNumber, pLaborRate, laborRate)
         llResultContainer.addView(generalInfo)
 
         val separator = TextView(requireContext())
-        separator.text = "_________________________________________________"
+        separator.text = getString(R.string.linea_separador)
         llResultContainer.addView(separator)
 
         val details = data.getJSONArray("details")
@@ -196,9 +203,10 @@ class ConsultaFragment : Fragment() {
             llResultContainer.addView(detailTextView)
 
             val detailSeparator = TextView(requireContext())
-            detailSeparator.text = "_________________________________________________"
+            detailSeparator.text = getString(R.string.linea_separador)
             llResultContainer.addView(detailSeparator)
         }
+
         val subTotalPart = data.getString("sub_total_part")
         val subTotalPaint = data.getString("sub_total_paint")
         val subTotalLabor = data.getString("sub_total_labor")
@@ -207,22 +215,23 @@ class ConsultaFragment : Fragment() {
         val total = data.getString("total")
 
         val totalsTextView = TextView(requireContext())
-        totalsTextView.text = """
-            sub_total_part: $subTotalPart
-            sub_total_paint: $subTotalPaint
-            sub_total_labor: $subTotalLabor
-            sub_total: $subTotal
-            tax: $tax
-            total: $total
-        """.trimIndent()
+        totalsTextView.text = getString(
+            R.string.totals_format,
+            subTotalPart,
+            subTotalPaint,
+            subTotalLabor,
+            subTotal,
+            tax,
+            total
+        )
         llResultContainer.addView(totalsTextView)
     }
 
     private fun showErrorDialog(message: String) {
         AlertDialog.Builder(requireContext())
-            .setTitle("Error")
+            .setTitle(getString(R.string.error_texto))
             .setMessage(message)
-            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+            .setPositiveButton((R.string.ok_texto)) { dialog, _ -> dialog.dismiss() }
             .show()
     }
 
@@ -230,7 +239,7 @@ class ConsultaFragment : Fragment() {
         val caseNumber = etCaseNumber.text.toString()
         val caseToken = etCaseToken.text.toString()
 
-        if (caseNumber.isEmpty()) {showErrorDialog("Debe ingresar un Case Number para descargar el PDF.")
+        if (caseNumber.isEmpty()) {showErrorDialog(getString(R.string.debe_ingresar_case_number_token_para_descargar_el_pdf))
             return
         }
 
@@ -260,40 +269,38 @@ class ConsultaFragment : Fragment() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                Log.d("DownloadPDF", "Iniciando descarga...")
-                Log.d("DownloadPDF", "URL: $url")
-                Log.d("DownloadPDF", "Request Body: $jsonString")
+                Log.d("DownloadPDF", getString(R.string.iniciando_descarga))
+                //Log.d("DownloadPDF", "URL: $url")
+                Log.d("DownloadPDF", getString(R.string.url, url))
+                //Log.d("DownloadPDF", "Request Body: $jsonString")
+                Log.d("DownloadPDF", getString(R.string.cuerpo_de_la_solicitud, jsonString))
 
                 val response = client.newCall(request).execute()
 
                 if (response.isSuccessful) {
-                    Log.d("DownloadPDF", "Respuesta exitosa: ${response.code}")
+                    //Log.d("DownloadPDF", "Respuesta exitosa: ${response.code}")
+                    Log.d("DownloadPDF", getString(R.string.respuesta_exitosa, response.code))
 
                     // Verificar si el cuerpo de la respuesta no está vacío
                     val responseBody = response.body
                     if (responseBody == null) {
                         withContext(Dispatchers.Main) {
-                            showErrorDialog("La respuesta del servidor está vacía.")
-                            Log.e("DownloadPDF", "La respuesta del servidor está vacía.")
+                            showErrorDialog(getString(R.string.la_respuesta_del_servidor_esta_vacia))
+                            //Log.e("DownloadPDF", "La respuesta del servidor está vacía.")
                         }
                         return@launch
                     }
-
-                    // Obtener el nombre del archivo (si no viene en el header, usar el caseNumber)
-                    val contentDisposition = response.header("Content-Disposition")
-                    val filename = extractFilenameFromContentDisposition(contentDisposition, caseNumber)
 
                     // Crear el archivo PDF en la carpeta de descargas pública
                     val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     // Obtener la fecha actual
                     val currentDate = SimpleDateFormat("ddMMyyyy", Locale.getDefault()).format(Date())
-                    //val file = File(downloadsDir, filename)
                     // Crear el nombre del archivo con el caseNumber y la fecha
                     val newFilename = "Caso-$caseNumber-$currentDate.pdf"
                     val file = File(downloadsDir, newFilename)
 
                     try {
-                        // Check if the file exists, and delete it if it does
+                        // Chequea si el archivo existe, si existe lo borra
                         if (file.exists()) {
                             file.delete()
                         }
@@ -307,7 +314,8 @@ class ConsultaFragment : Fragment() {
                             }
                         }
 
-                        Log.d("DownloadPDF", "PDF guardado en: ${file.absolutePath}")
+                        //Log.d("DownloadPDF", "PDF guardado en: ${file.absolutePath}")
+                        Log.d("DownloadPDF", getString(R.string.pdf_guardado_en, file.absolutePath))
 
                         // Abrir el archivo PDF con una aplicación externa (en Dispatchers.Main)
                         withContext(Dispatchers.Main) {
@@ -324,67 +332,54 @@ class ConsultaFragment : Fragment() {
                                 startActivity(intent)
                             } catch (e: ActivityNotFoundException) {Toast.makeText(
                                 requireContext(),
-                                "No hay aplicación para abrir PDF",
+                                getString(R.string.no_hay_aplicación_para_abrir_pdf),
                                 Toast.LENGTH_SHORT
                             ).show()
                             }
                         }
                     } catch (e: IOException) {
                         withContext(Dispatchers.Main) {
-                            showErrorDialog("Error al guardar el archivo: ${e.message}")
-                            Log.e("DownloadPDF", "Error al guardar el archivo: ${e.message}", e)
+                            showErrorDialog(getString(R.string.error_al_guardar_el_archivo, e.message))
+                            //Log.e("DownloadPDF", "Error al guardar el archivo: ${e.message}", e)
                         }
                     } catch (e: SecurityException) {
                         withContext(Dispatchers.Main) {
-                            showErrorDialog("Error de seguridad al acceder al archivo: ${e.message}")
-                            Log.e("DownloadPDF", "Error de seguridad al acceder al archivo: ${e.message}", e)
+                            showErrorDialog(getString(R.string.error_de_seguridad_al_acceder_al_archivo, e.message))
+                            //Log.e("DownloadPDF", "Error de seguridad al acceder al archivo: ${e.message}", e)
                         }
                     } catch (e: Exception) {
                         withContext(Dispatchers.Main) {
-                            showErrorDialog("Error desconocido: ${e.message ?: "No message"}")
-                            Log.e("DownloadPDF", "Error desconocido", e)
+                            showErrorDialog("Error desconocido: ${e.message ?: getString(R.string.sin_informacion)}")
+                            //Log.e("DownloadPDF", "Error desconocido", e)
                             e.printStackTrace()
                         }
                     }
                 } else {
                     // Manejar errores de la respuesta
                     val responseBody = response.body?.string()
-                    Log.e("DownloadPDF", "Error en la respuesta: ${response.code} - $responseBody")
+                    Log.e("DownloadPDF",getString(R.string.error_en_la_solicitud, response.code, responseBody))
+                    //Log.e("DownloadPDF", "Error en la respuesta: ${response.code} - $responseBody")
                     withContext(Dispatchers.Main) {
                         val errorMessage = when (response.code) {
-                            400 -> "Solicitud incorrecta. Verifique los datos ingresados."
-                            404 -> "No se encontró información para los parámetros proporcionados."
-                            500 -> "Error interno del servidor."
-                            else -> "Error desconocido: ${response.code}"
+                            400 -> getString(R.string.solicitud_incorrecta_verifique_los_datos)
+                            404 -> getString(R.string.no_se_encontr_informacion_para_los_parametros_proporcionados)
+                            500 -> getString(R.string.error_interno_del_servidor)
+                            else -> getString(R.string.error_desconocido, response.code)
                         }
                         showErrorDialog(errorMessage)
                     }
                 }
             } catch (e: IOException) {
                 withContext(Dispatchers.Main) {
-                    showErrorDialog("Error de red: ${e.message}")
-                    Log.e("DownloadPDF", "Error de red: ${e.message}", e)
+                    showErrorDialog(getString(R.string.error_de_red, e.message))
+                    //Log.e("DownloadPDF", "Error de red: ${e.message}", e)
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    showErrorDialog("Error desconocido: ${e.message ?: "No message"}")
-                    Log.e("DownloadPDF", "Error desconocido", e)
+                    showErrorDialog("Error desconocido: ${e.message ?: getString(R.string.sin_informacion)}")
+                    //Log.e("DownloadPDF", "Error desconocido", e)
                     e.printStackTrace()}
             }
-        }
-    }
-
-    private fun extractFilenameFromContentDisposition(contentDisposition: String?, caseNumber: String): String {
-        if (contentDisposition == null) {
-            return "Caso-$caseNumber.pdf"
-        }
-        val filenameRegex = Regex("filename\\s*=\\s*\"?([^\";]+)\"?")
-        val filenameMatch = filenameRegex.find(contentDisposition)
-
-        return if (filenameMatch != null) {
-            filenameMatch.groupValues[1]
-        } else {
-            "Caso-$caseNumber.pdf"
         }
     }
 
@@ -406,26 +401,21 @@ class ConsultaFragment : Fragment() {
             ActivityCompat.requestPermissions(
                 requireActivity(),
                 arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                REQUEST_CODE_PERMISSIONS
+                requestCodePermissions
             )
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+        if (requestCode == requestCodePermissions) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Permission granted, retry download
                 downloadPdf()
             } else {
                 // Permission denied
-                showErrorDialog("Permiso de almacenamiento denegado.")
+                showErrorDialog(getString(R.string.permiso_de_almacenamiento_denegado))
             }
         }
-    }
-
-    // Muestra un Toast con un mensaje
-    private fun showToast(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
 }

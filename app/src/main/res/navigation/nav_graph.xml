@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/nav_presupuestofragment"
-        android:name="com.ehome.enpartesapp.ui.Presupuesto.PresupuestoFragment"
+        android:name="com.ehome.enpartesapp.ui.presupuesto.PresupuestoFragment"
         android:label="@string/first_fragment_label"
         tools:layout="@layout/fragment_presupuesto" >
 
@@ -28,7 +28,7 @@
 
     <fragment
         android:id="@+id/nav_secondfragment"
-        android:name="com.ehome.enpartesapp.ui.Presupuesto.SecondFragment"
+        android:name="com.ehome.enpartesapp.ui.presupuesto.SecondFragment"
         android:label="@string/second_fragment_label"
         tools:layout="@layout/fragment_second" >
 

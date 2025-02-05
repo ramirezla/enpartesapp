@@ -35,7 +35,7 @@ class LoginActivity : AppCompatActivity() {
 
         // If you detect that there's no network connection
         if (!NetworkUtils.isNetworkAvailable(this)) {
-            Toast.makeText(this, "No network connection available", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.no_hay_conexion_de_red_disponible), Toast.LENGTH_LONG).show()
             // Prompt the user to open network settings
             val intent = Intent(Settings.ACTION_WIRELESS_SETTINGS)
             startActivity(intent)
@@ -63,15 +63,15 @@ class LoginActivity : AppCompatActivity() {
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val builder = AlertDialog.Builder(this@LoginActivity)
-                builder.setTitle("Confirmar salir")
-                    .setMessage("¿Esta seguro que desea salir?")
-                    .setPositiveButton("Si") { _, _ ->
+                builder.setTitle(getString(R.string.confirmar_salir))
+                    .setMessage(getString(R.string.esta_seguro_que_desea_salir))
+                    .setPositiveButton(getString(R.string.si)) { _, _ ->
                         if (isTaskRoot) {finishAffinity()
                         } else {
                             finish()
                         }
                     }
-                    .setNegativeButton("No") { dialog, _ ->
+                    .setNegativeButton(getString(R.string.no)) { dialog, _ ->
                         dialog.dismiss()
                     }
                     .show()
@@ -168,7 +168,7 @@ class LoginActivity : AppCompatActivity() {
 
                             else -> {
                                 // Handle other codes or unknown codes
-                                Log.e("API Response", "Code: ${authResponse.code}, Message: ${authResponse.msg}")
+                                Log.e(getString(R.string.api_response), "Code: ${authResponse.code}, Message: ${authResponse.msg}")
                                 // Show error dialog
                                 showErrorDialog(authResponse.code, authResponse.msg)
                             }
@@ -176,7 +176,7 @@ class LoginActivity : AppCompatActivity() {
                     }
                 } else {
                     // Handle the error response
-                    Log.e("API Error", "Code: ${response.code()}, Message: ${response.message()}")
+                    Log.e(getString(R.string.api_error), "Code: ${response.code()}, Message: ${response.message()}")
                     // Show error dialog
                     showErrorDialog(response.code().toString(), response.message())
                 }
@@ -185,10 +185,10 @@ class LoginActivity : AppCompatActivity() {
             override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
                 binding.loginProgressBar.visibility = View.GONE
                 // Handle the network failure
-                Log.e("API Failure", "Error: ${t.message}")
+                Log.e(getString(R.string.api_failure), "Error: ${t.message}")
                 // Show error dialog
-                showErrorDialog("Network Error onFailure...", t.message ?: "Unknown network error")
-//                // Temporal sin internet
+                showErrorDialog(getString(R.string.error_de_red_en_caso_de_falla), t.message ?: getString(R.string.error_de_red_desconocido))
+//                // Temporal sin internet solo para pruebas
 //                val intent = Intent(this@LoginActivity, MainActivity::class.java)
 //                val bundle = Bundle()
 //                bundle.putString("username", accessCode)

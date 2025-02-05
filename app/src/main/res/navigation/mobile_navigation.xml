@@ -37,7 +37,7 @@
 
     <fragment
         android:id="@+id/nav_presupuestofragment"
-        android:name="com.ehome.enpartesapp.ui.Presupuesto.PresupuestoFragment"
+        android:name="com.ehome.enpartesapp.ui.presupuesto.PresupuestoFragment"
         android:label="@string/menu_siniestro"
         tools:layout="@layout/fragment_presupuesto" >
 
@@ -48,7 +48,7 @@
 
     <fragment
         android:id="@+id/nav_consultafragment"
-        android:name="com.ehome.enpartesapp.ui.Presupuesto.ConsultaFragment"
+        android:name="com.ehome.enpartesapp.ui.presupuesto.ConsultaFragment"
         android:label="@string/menu_consulta_siniestro"
         tools:layout="@layout/fragment_consulta_siniestro" >
 

@@ -11,7 +11,7 @@
         android:id="@+id/licensePlateInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hint_placa_serial"
+        android:hint="@string/ingrese_placa_o_serial_del_vehiculo"
         app:endIconMode="clear_text">
 
         <com.google.android.material.textfield.TextInputEditText

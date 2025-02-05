@@ -1,4 +1,4 @@
-package com.ehome.enpartesapp.ui.Presupuesto
+package com.ehome.enpartesapp.ui.presupuesto
 
 import android.view.LayoutInflater
 import android.view.View

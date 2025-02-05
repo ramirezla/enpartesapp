@@ -1,4 +1,4 @@
-package com.ehome.enpartesapp.ui.Presupuesto
+package com.ehome.enpartesapp.ui.presupuesto
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

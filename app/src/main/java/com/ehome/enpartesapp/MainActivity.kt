@@ -3,10 +3,8 @@ package com.ehome.enpartesapp
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -29,7 +27,7 @@ class MainActivity : AppCompatActivity() {
 
         // Se recibe el valor del id del usuario y el password permitido.
         val nombreUsuario = intent.extras?.getString("username")
-        val passwordUsuario = intent.extras?.getString("userpassword")
+//        val passwordUsuario = intent.extras?.getString("userpassword")
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -44,10 +42,10 @@ class MainActivity : AppCompatActivity() {
 //        }
 
         // Se crea un bundle con los parametros que se desea pasar al fragment
-        val bundle = Bundle().apply {
-            putString("username", nombreUsuario)        // Pass nombreUsuario in the bundle
-            putString("userpassword", passwordUsuario)  // Pass passwordUsuario in the bundle
-        }
+//        val bundle = Bundle().apply {
+//            putString("username", nombreUsuario)        // Pass nombreUsuario in the bundle
+//            putString("userpassword", passwordUsuario)  // Pass passwordUsuario in the bundle
+//        }
 
         val drawerLayout: DrawerLayout = binding.drawerLayout
         navigationView = binding.navView
@@ -92,7 +90,7 @@ class MainActivity : AppCompatActivity() {
 //                    // Lógica para descargar PDF
 //                    Toast.makeText(this, "Descargar PDF", Toast.LENGTH_SHORT).show()
 //                }
-                else -> false // Manejar otros ítems del menú
+//                else -> false // Manejar otros ítems del menú
             }
             drawerLayout.closeDrawer(GravityCompat.START) // Cerrar el drawer después de la navegación
             true // Indicar que el ítem fue manejado
@@ -100,7 +98,7 @@ class MainActivity : AppCompatActivity() {
 
         // Botón de salida
         val navigationView: NavigationView = findViewById(R.id.nav_view)
-        val menu: Menu = navigationView.menu
+//        val menu: Menu = navigationView.menu
         // Botón de salida
         val exitMenuItem = navigationView.menu.findItem(R.id.exitMenuItem)
         exitMenuItem.setOnMenuItemClickListener {
