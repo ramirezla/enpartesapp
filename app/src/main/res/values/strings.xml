@@ -2,6 +2,8 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string name="version">Versión: %1$s</string>
+    <string name="version_na">Version N/A</string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -57,7 +59,9 @@
     <string name="descripcion_logo_enpartes">"Logo de enpartes"</string>
     <string name="valor_en_verde">"542.5"</string>
     <string name="cuenta_usuario_item">Cuenta</string>
+    <string name="perfil_de_usuario">Perfil de usuario</string>
     <string name="salir_item">Salir</string>
+    <string name="cerrar_sesion">Cerrar sesión</string>
     <string name="esta_seguro_que_desea_salir">¿Esta seguro que desea salir?</string>
     <string name="action_registrar">Registrar usuario</string>
     <string name="cantidad_verdes">"478.9"</string>
@@ -97,8 +101,8 @@
     <string name="respuesta_del_servidor">Respuesta del servidor: %1$s</string>
     <string name="error">Error %1$s</string>
     <string name="error_texto">Error</string>
-    <string name="ok_texto">Ok</string>
-    <string name="iniciando_descarga">Iniciando descarga...</string>
+    <string name="ok_texto">OK</string>
+    <string name="iniciando_descarga">Iniciando descarga.</string>
     <string name="url">URL: %1$s</string>
     <string name="cuerpo_de_la_solicitud">Cuerpo de la solicitud: %1$s</string>
     <string name="respuesta_exitosa">Respuesta exitosa: %1$d</string>
@@ -119,7 +123,7 @@
     <string name="api_error">API Error</string>
     <string name="api_response">API Respuesta</string>
     <string name="api_failure">API Falla</string>
-    <string name="error_de_red_en_caso_de_falla">Error de red en caso de falla...</string>
-    <string name="error_de_red_desconocido">Error de red desconocido</string>
+    <string name="error_de_red_en_caso_de_falla">Error de red en caso de falla.</string>
+    <string name="error_de_red_desconocido">Error de red desconocido.</string>
 
 </resources>

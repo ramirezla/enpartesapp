@@ -110,7 +110,7 @@ class LoginActivity : AppCompatActivity() {
 
     // Crea el servicio para preguntar a integracion
     object RetrofitClient {
-        //private const val BASE_URL = "http://192.168.1.128/" // ip URL eHome
+        //private const val BASE_URL = "http://10.172.17.12/" // ip URL eHome
         private const val BASE_URL = "http://192.168.1.127/" // ip URL de la oficina
 
         val instance: ApiService by lazy {
