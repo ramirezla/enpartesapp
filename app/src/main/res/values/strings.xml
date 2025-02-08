@@ -79,13 +79,11 @@
     <string name="imagen_referencia">Referencia</string>
     <string name="tomar_foto">Tomar foto.</string>
     <string name="subir_foto">Subir imagen.</string>
-
-    <!-- Texto mensajes de API solmovsa -->
     <string name="error_message">Error: %1$s</string>
     <string name="AI_cloud">"MotionsCloud Vehicle Assessment Report\nPowered by AI Computer Vision Technologies"</string>
-    <string name="general_info_format">case_number: %1$s\nvin_number: %2$s\nDetalles: (p_labor_rate: %3$s, labor_rate: %4$s)</string>
+    <string name="general_info_format">Número de caso: %1$s\nNúmero de Vin: %2$s\nDetalles: (Precio mano de obra: %3$s, Tasa mano de obra: %4$s)</string>
     <string name="linea_separador">_________________________________________________</string>
-    <string name="totals_format">sub_total_part: %1$s\nsub_total_paint: %2$s\nsub_total_labor: %3$s\nsub_total: %4$s\ntax: %5$s\ntotal: %6$s</string>
+    <string name="totals_format">Sub total partes y piezas: %1$s\nSub total pintura: %2$s\nSub total mano de obra: %3$s\nSub total: %4$s\nImpuesto: %5$s\nTotal: %6$s</string>
 
     <!-- Textos de Mensajes -->
     <string name="ingrese_placa_o_serial_del_vehiculo">Ingrese la placa o el Serial del vehículo.</string>
@@ -134,6 +132,7 @@
     <string name="numero_de_reclamo">Número de Reclamo: %s</string>
     <string name="fecha_de_reclamo">Fecha de Reclamo: %s</string>
     <string name="partes_y_piezas">Partes y Piezas</string>
+    <string name="partes_y_piezas_nombre">Partes y Piezas: %s</string>
     <string name="descripcion">Description: %s</string>
     <string name="status">Status: %s</string>
     <string name="cantidad">Cantidad: %s</string>
@@ -148,5 +147,40 @@
     <string name="numero_reclamo">Número reclamo:</string>
     <string name="fecha_reclamo">Fecha Reclamo:</string>
     <string name="id_de_solicitud">ID Solicitud:</string>
+    <string name="marca">Marca:</string>
+    <string name="modelo">Modelo:</string>
+    <string name="anno">Año:</string>
+    <string name="vehiculo_id">ID del vehículo:</string>
+    <string name="caracteristicas">Características:</string>
+    <string name="placa">Placa:</string>
+    <string name="serial">Serial:</string>
+    <string name="vin">Vin:</string>
+    <string name="informacion">Información:</string>
+    <string name="detail_info_format">
+        <![CDATA[
+        <b>Lado 1:</b> %1$s<br/>
+        <b>Lado 2:</b> %2$s<br/>
+        <b>Daño:</b> %3$s<br/>
+        <b>Confianza:</b> %4$s<br/>
+        <b>Tratamiento:</b> %5$s<br/>
+        <b>Costo de la pieza o parte:</b> %6$s<br/>
+        <b>Hora de pintura:</b> %7$s<br/>
+        <b>Costo material de pintura:</b> %8$s<br/>
+        <b>Horas de trabajo:</b> %9$s<br/>
+        <b>Costo laboral:</b> %10$s<br/>
+        ]]>
+    </string>
 
 </resources>
+
+    <!--  Nota sobre el string: detail_info_format
+    <![CDATA[ ... ]]>: This is a CDATA section. It's used to include characters that would normally be interpreted as XML markup (like < and >) without them being parsed as such. This is important because we're using HTML-like tags (<b>, <br/>) for formatting.
+    <b>...</b>: These are HTML bold tags. They will make the text between them bold.
+    <br/>: This is an HTML line break tag. It will insert a new line.
+    %1$s, %2$s, %3$s, ..., %10$s: These are format specifiers. They are placeholders that will be replaced by the values you pass to getString() in your Kotlin code.
+    %1$s: The first string argument ( detail.getString("side_1") )
+    %2$s: The second string argument ( detail.getString("side_2") )
+    %3$s: The third string argument ( detail.getString("damage") )
+    ...and so on, up to %10$s for the tenth argument.
+    The s indicates that these are string values.
+    Order: The order of the format specifiers (%1$s, %2$s, etc.) must match the order of the arguments you pass to getString() in your Kotlin code.-->

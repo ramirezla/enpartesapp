@@ -151,24 +151,6 @@ class ReclamosFragment : Fragment() {
         builder.create().show()
     }
 
-    // Function to format date to DD/MM/YYYY
-//    private fun formatDate(inputDate: String): String {
-//        // Define input and output formats
-//        val inputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSSSS", Locale.getDefault())
-//        val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-//
-//        try {
-//            // Parse the input date string val
-//            val date = inputFormat.parse(inputDate)
-//
-//            // Format the date to the desired output format
-//            return date?.let { outputFormat.format(it) } ?: getString(R.string.fecha_invalida)
-//        } catch (e: ParseException) {
-//            Log.e("ReclamosFragment", getString(R.string.error_al_analizar_la_fecha, e.message))
-//            return getString(R.string.fecha_invalida)
-//        }
-//    }
-
     // Function to make API request
     private fun makeApiRequest(url: String): String {
         val client = OkHttpClient()

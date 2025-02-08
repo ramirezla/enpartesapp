@@ -5,10 +5,13 @@ import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import com.ehome.enpartesapp.R
 import kotlinx.coroutines.CoroutineScope
@@ -162,51 +166,44 @@ class ConsultaFragment : Fragment() {
     }
 
     private fun displayFormattedData(jsonResponse: JSONObject) {
-        val mainTitle = TextView(requireContext())
-        mainTitle.text = getString(R.string.AI_cloud)
+        // Main Title (AI Cloud)
+        val mainTitle = TextView(requireContext()).apply {
+            text = getString(R.string.AI_cloud)
+            textSize = 10f
+            setTypeface(null, Typeface.BOLD)
+            setTextColor(Color.BLACK)
+            gravity = Gravity.CENTER
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.setMargins(0, 16, 0, 16)
+            layoutParams = params
+        }
         llResultContainer.addView(mainTitle)
 
+        // Extract data from the JSON response
         val data = jsonResponse.getJSONObject("data")
         val caseNumber = data.getString("case_number")
         val vinNumber = data.getString("vin_number")
         val pLaborRate = data.getString("p_labor_rate")
         val laborRate = data.getString("labor_rate")
 
-        val generalInfo = TextView(requireContext())
-        //generalInfo.text = "case_number: $caseNumber\nvin_number: $vinNumber\nDetalles: (p_labor_rate: $pLaborRate, labor_rate: $laborRate)"
-        generalInfo.text = getString(R.string.general_info_format, caseNumber, vinNumber, pLaborRate, laborRate)
-        llResultContainer.addView(generalInfo)
-
-        val separator = TextView(requireContext())
-        separator.text = getString(R.string.linea_separador)
-        llResultContainer.addView(separator)
-
-        val details = data.getJSONArray("details")
-        for (i in 0 until details.length()) {
-            val detail = details.getJSONObject(i)
-            val detailText = """
-                car_part: ${detail.getString("car_part")}
-                side_1: ${detail.getString("side_1")}
-                side_2: ${detail.getString("side_2")}
-                damage: ${detail.getString("damage")}
-                confidence: ${detail.getString("confidence")}
-                treatment: ${detail.getString("treatment")}
-                part_cost: ${detail.getString("part_cost")}
-                paint_hour: ${detail.getString("paint_hour")}
-                paint_material_cost: ${detail.getString("paint_material_cost")}
-                labour_hour: ${detail.getString("labour_hour")}
-                labour_cost: ${detail.getString("labour_cost")}
-            """.trimIndent()
-
-            val detailTextView = TextView(requireContext())
-            detailTextView.text = detailText
-            llResultContainer.addView(detailTextView)
-
-            val detailSeparator = TextView(requireContext())
-            detailSeparator.text = getString(R.string.linea_separador)
-            llResultContainer.addView(detailSeparator)
+        // Información general
+        val generalInfo = TextView(requireContext()).apply {
+            text = getString(R.string.general_info_format, caseNumber, vinNumber, pLaborRate, laborRate) // Format the text using string resources
+            setTypeface(null, Typeface.BOLD)
+            setBackgroundColor(Color.parseColor("#AAACAB")) // Gris medio #AAACAB
+            setTextColor(Color.BLACK) // Set the text color to black
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.setMargins(0, 0, 0, 16) // Add a bottom margin (16dp)
+            layoutParams = params // Apply the layout parameters
         }
+        llResultContainer.addView(generalInfo) // Add the general info to the container
 
+        // Totals (Moved to the top)
         val subTotalPart = data.getString("sub_total_part")
         val subTotalPaint = data.getString("sub_total_paint")
         val subTotalLabor = data.getString("sub_total_labor")
@@ -214,17 +211,92 @@ class ConsultaFragment : Fragment() {
         val tax = data.getString("tax")
         val total = data.getString("total")
 
-        val totalsTextView = TextView(requireContext())
-        totalsTextView.text = getString(
-            R.string.totals_format,
-            subTotalPart,
-            subTotalPaint,
-            subTotalLabor,
-            subTotal,
-            tax,
-            total
-        )
-        llResultContainer.addView(totalsTextView)
+        // Create a container for the totals
+        val totalsContainer = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(Color.parseColor("#AAACAB")) // Gris medio #AAACAB
+            val params = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.setMargins(0, 0, 0, 16) // Add a bottom margin
+            layoutParams = params
+            setPadding(16, 16, 16, 16) // Add padding
+        }
+
+        val totalsTextView = TextView(requireContext()).apply {
+            text = getString(
+                R.string.totals_format,
+                subTotalPart,
+                subTotalPaint,
+                subTotalLabor,
+                subTotal,
+                tax,
+                total
+            )
+            setTextColor(Color.BLACK)
+            setTypeface(null, Typeface.BOLD)
+        }
+        totalsContainer.addView(totalsTextView)
+        llResultContainer.addView(totalsContainer) // Add the totals container to the main container
+
+        // Details
+        val details = data.getJSONArray("details")
+        for (i in 0 until details.length()) {
+            val detail = details.getJSONObject(i)
+
+            // Create a container for each detail item
+            val detailContainer = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.VERTICAL // Vertical orientation for the detail items
+                //setBackgroundColor(Color.LTGRAY) // Set a light gray background color #d0d2d1
+                setBackgroundColor(Color.parseColor("#d0d2d1")) // Gris bajo #d0d2d1
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                params.setMargins(0, 0, 0, 8) // Add a bottom margin (8dp) between detail items
+                layoutParams = params // Apply the layout parameters
+                setPadding(16, 16, 16, 16) // Add padding inside the container (16dp on all sides)
+            }
+
+            // Detail Title (Car Part)
+            val detailTitle = TextView(requireContext()).apply {
+                text = getString(R.string.partes_y_piezas_nombre, detail.getString("car_part")) // Set the title text
+                textSize = 16f // Set the text size
+                setTypeface(null, Typeface.BOLD) // Make the text bold
+                setTextColor(Color.BLACK) // Set the text color to black
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                params.setMargins(0, 0, 0, 8) // Add a bottom margin (8dp)
+                layoutParams = params // Apply the layout parameters
+            }
+            detailContainer.addView(detailTitle) // Add the title to the detail container
+
+            // Detail Information
+            val detailInfo = TextView(requireContext()).apply {
+                val formattedText = getString(
+                    R.string.detail_info_format,
+                    detail.getString("side_1"), // Replaces %1$s
+                    detail.getString("side_2"), // Replaces %2$s
+                    detail.getString("damage"), // Replaces %3$s
+                    detail.getString("confidence"), // Replaces %4$s
+                    detail.getString("treatment"), // Replaces %5$s
+                    detail.getString("part_cost"), // Replaces %6$s
+                    detail.getString("paint_hour"), // Replaces %7$s
+                    detail.getString("paint_material_cost"), // Replaces %8$s
+                    detail.getString("labour_hour"), // Replaces %9$s
+                    detail.getString("labour_cost") // Replaces %10$s
+                ) // Format the text using string resources
+                // Use HtmlCompat.fromHtml() to parse the HTML
+                text = HtmlCompat.fromHtml(formattedText, HtmlCompat.FROM_HTML_MODE_LEGACY)
+                setTextColor(Color.BLACK)
+            }
+            detailContainer.addView(detailInfo) // Add the detail information to the detail container
+
+            llResultContainer.addView(detailContainer) // Add the detail container to the main container
+        }
     }
 
     private fun showErrorDialog(message: String) {

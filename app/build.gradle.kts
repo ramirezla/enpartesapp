@@ -53,6 +53,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    implementation(libs.google.material.v1110) // Implementar el icono para mostrar u ocultar el password
+
     // Retrofit
     implementation(libs.retrofit) // Or the latest version
     // Gson Converter (if you're using Gson for JSON parsing)

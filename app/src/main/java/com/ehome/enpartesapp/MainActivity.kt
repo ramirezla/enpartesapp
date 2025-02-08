@@ -85,11 +85,12 @@ class MainActivity : AppCompatActivity() {
                     drawerLayout.closeDrawer(GravityCompat.START)
                     return@setNavigationItemSelectedListener true
                 }
-                R.id.nav_consultar_siniestro -> {
-                    // Expandir o colapsar el submenú de Siniestro
-                    //toggleSiniestroSubmenu()
-                    return@setNavigationItemSelectedListener false // No navegar
-                }
+                // opcion para el Perfil de usuario
+//                R.id.nav_consultar_siniestro -> {
+//                    // Expandir o colapsar el submenú de Siniestro
+//                    //toggleSiniestroSubmenu()
+//                    return@setNavigationItemSelectedListener false // No navegar
+//                }
                 R.id.nav_reportar_siniestro -> {
                     // Navegar al fragmento de reportar siniestro
                     navController.navigate(R.id.nav_presupuestofragment)
