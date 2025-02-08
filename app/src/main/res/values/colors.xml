@@ -9,6 +9,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="colorNegro">#000000</color>
     <color name="my_button_color">#2C40A1</color>
+    <color name="light_blue">#E0F2F7</color>
+    <color name="light_gray">#F0F0F0</color>
 
     <color name="select_button_color">#FF4081</color>
     <color name="colorPrimary">#3F51B5</color>

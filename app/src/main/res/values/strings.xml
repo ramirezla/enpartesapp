@@ -127,5 +127,26 @@
     <string name="error_de_red_desconocido">Error de red desconocido.</string>
     <string name="no_se_encontraron_resultados">No se encontraron resultados.</string>
     <string name="ingrese_la_placa_o_el_serial">Ingrese la placa o el serial</string>
+    <string name="lista_de_reclamos">Listado de reclamos</string>
+
+    <string name="id_solicitud">ID Solicitud: %s</string>
+    <string name="sin_numero">Sin número: %s</string>
+    <string name="numero_de_reclamo">Número de Reclamo: %s</string>
+    <string name="fecha_de_reclamo">Fecha de Reclamo: %s</string>
+    <string name="partes_y_piezas">Partes y Piezas</string>
+    <string name="descripcion">Description: %s</string>
+    <string name="status">Status: %s</string>
+    <string name="cantidad">Cantidad: %s</string>
+    <string name="condicion">Condición: %s</string>
+    <string name="error_al_analizar_la_fecha">Error al analizar la fecha: %s</string>
+    <string name="id_del_reclamo_es_cero">Id del reclamo es cero</string>
+    <string name="error_en_la_solicitud_del_api">Error en la solicitud del API: %s</string>
+    <string name="error_cargando_la_informacion_de_los_reclamos">Error cargando la información de los reclamos.</string>
+    <string name="fecha_invalida">Fecha invalida</string>
+    <string name="no_se_encontraron_reclamos">No se encontraron reclamos</string>
+    <string name="datos_del_vehiculo">Datos del vehículo</string>
+    <string name="numero_reclamo">Número reclamo:</string>
+    <string name="fecha_reclamo">Fecha Reclamo:</string>
+    <string name="id_de_solicitud">ID Solicitud:</string>
 
 </resources>
