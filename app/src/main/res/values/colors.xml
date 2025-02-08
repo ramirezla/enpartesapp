@@ -7,13 +7,17 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="app_bar_main_azul">#2C40A1</color>
+    <color name="colorNegro">#000000</color>
+    <color name="my_button_color">#2C40A1</color>
+
+    <color name="select_button_color">#FF4081</color>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="colorNegro">#000000</color>
+    <color name="colorPrimaryButton">#3F51B5</color>
+
+    <color name="app_bar_main_azul">#2C40A1</color>
     <color name="iron">#CCCCCC</color>
-    <color name="colorPrimaryButton">#2b388e</color>
     <color name="colorPrimaryDarkButton">#293583</color>
     <color name="colorBlanco">#FFFFFF</color>
     <color name="blue">#00abea</color>
@@ -34,4 +38,6 @@
     <color name="navigationBarColor">#000000</color>
     <color name="colortabseleccionado">#fc2b01</color>
     <color name="blue_pressed">#1976D2</color>
+    <color name="my_high_contrast_text_color">#FF000000</color> <!-- Black -->
+    <color name="my_high_contrast_background_color">#FFFFFFFF</color> <!-- White -->
 </resources>

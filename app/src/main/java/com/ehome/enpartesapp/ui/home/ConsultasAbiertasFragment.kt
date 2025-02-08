@@ -1,5 +1,6 @@
 package com.ehome.enpartesapp.ui.home
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +9,6 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.ehome.enpartesapp.R
 import com.ehome.enpartesapp.databinding.FragmentConsultasabiertasBinding
@@ -25,12 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-//TODO:
-// Buscador para Obtener el vehiculo por placa o serial (todos las veces que aparece el vehiculo, se selecciona uno)
-//  -> todos reclamos (y se selecciona 1) getVehicleClaim con el id del vehiculo
-//      -> Las solicitudes o reclamos seleccionar el reclamo, ejemplo "claimId": 260 y "snumerosolicitud": "E3F74736-BA3A-4BC0-9FAA-09C16FB290F9",
-//          -> Leer las partes del reclamo y mostrarlos (getParts) GETPARTSCLAIM con clainnumber, separar por tab: vehiculo, piezas y destinos.
-
+//TODO: Arreglar la vista
 data class VehicleData(
     val datos: VehicleInfo?,
     val carac: List<VehicleCarac>?
@@ -101,7 +96,7 @@ class ConsultasAbiertasFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+        //val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
         _binding = FragmentConsultasabiertasBinding.inflate(inflater, container, false)
         val root: View = binding.root
@@ -134,15 +129,13 @@ class ConsultasAbiertasFragment : Fragment() {
         resultTextView.visibility = if (currentResults.isNullOrEmpty()) View.GONE else View.VISIBLE
 
         // Restore the resultContainer state
-        restoreResultContainerState()
+        //restoreResultContainerState()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         // Save the state of your views here
         outState.putString("licensePlate", licensePlateEditText.text.toString())
-//        outState.putString("results", resultTextView.text.toString())
-//        outState.putStringArrayList("resultContainerState", ArrayList(currentResultContainerState))
     }
 
     override fun onDestroyView() {
@@ -156,7 +149,7 @@ class ConsultasAbiertasFragment : Fragment() {
 
         // Validate input (one or the other, not both)
         if (licensePlate.isEmpty()) {
-            licensePlateInputLayout.error = "Ingrese la placa o el serial"
+            licensePlateInputLayout.error = getString(R.string.ingrese_la_placa_o_el_serial)
             return
         } else {
             licensePlateInputLayout.error = null
@@ -178,26 +171,28 @@ class ConsultasAbiertasFragment : Fragment() {
                         if (vehicleResponse != null) {
                             displayVehicleData(vehicleResponse)
                         } else {
-                            resultTextView.text = "No se encontraron resultados."
+                            resultTextView.text = getString(R.string.no_se_encontraron_resultados)
                             resultTextView.visibility = View.VISIBLE
                             resultContainer.removeAllViews()
-                            currentResults = "No se encontraron resultados."
+                            currentResults = getString(R.string.no_se_encontraron_resultados)
                             currentResultContainerState.clear()
                         }
                     } else {
-                        resultTextView.text = "Error en la solicitud: ${response.code()}"
+                        //currentResults = "Error en la solicitud: ${response.code()}"
+                        resultTextView.text = getString(R.string.error_en_la_solicitud, response.code(), "")
                         resultTextView.visibility = View.VISIBLE
                         resultContainer.removeAllViews()
-                        currentResults = "Error en la solicitud: ${response.code()}"
+                        currentResults = getString(R.string.error_en_la_solicitud, response.code(), "")
+                        //currentResults = "Error en la solicitud: ${response.code()}"
                         currentResultContainerState.clear()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    resultTextView.text = "Error: ${e.message}"
+                    resultTextView.text = getString(R.string.error, e.message)
                     resultTextView.visibility = View.VISIBLE
                     resultContainer.removeAllViews()
-                    currentResults = "Error: ${e.message}"
+                    currentResults = getString(R.string.error, e.message)
                     currentResultContainerState.clear()
                 }
             }
@@ -207,119 +202,117 @@ class ConsultasAbiertasFragment : Fragment() {
     private fun displayVehicleData(vehicleResponse: Map<String, VehicleData>) {
         resultTextView.visibility = View.VISIBLE
         resultContainer.removeAllViews()
-        currentResultContainerState.clear()
 
         // Define the list of characteristics you want to display
-        val caracteristicasMostrar = listOf("Clase", "cylinder", "Categoría", "liters", "Carrocería", "transmission/Transmisión","Transmisión/Tracción", "Tipo de Carrocería") // Only these three
-        val caracteristicasNombres = listOf("Clase", "Cilindro", "Categoría", "Litros", "Carrocería", "Caja/Transmisión","Transmisión/Tracción", "Tipo de Carrocería") // Only these three
+        val caracteristicasMostrar = listOf("Clase", "cylinder", "Categoría", "liters", "Carrocería", "transmission/Transmisión", "Transmisión/Tracción", "Tipo de Carrocería")
+        val caracteristicasNombres = listOf("Clase", "Cilindro", "Categoría", "Litros", "Carrocería", "Caja/Transmisión", "Transmisión/Tracción", "Tipo de Carrocería")
 
         // Iterate through the Map using entries
-        for (entry in vehicleResponse.entries) {
-            // val vehicleKey = entry.key
-            // addTextViewToContainer("Vehicle Key: $vehicleKey")
-            val vehicleData = entry.value
+        if (vehicleResponse.isNotEmpty()) {
+            for (entry in vehicleResponse.entries) {
+                val vehicleData = entry.value
 
-            // Display VehicleInfo
-            val vehicleInfo = vehicleData.datos
-            if (vehicleInfo != null) {
-                val vehicleCarac = vehicleData.carac
-                if (vehicleCarac !=null) {
-                    for (carac in vehicleCarac) {
-                        // addTextViewToContainer("---------------------------------------------")
-//                        addTextViewToContainer(" ")
-                        // addTextViewToContainer("vehicleId: ${vehicleInfo.vehicleId}")
-                        addTextViewToContainer("Marca: ${vehicleInfo.brandName}")
-                        addTextViewToContainer("Modelo: ${vehicleInfo.modelName}")
-                        addTextViewToContainer("Año: ${vehicleInfo.year}")
-                        addTextViewToContainer("vehicleId: ${carac.vehicleId}")
-
-                        // Parse the inner JSON string
-                        val caracJson = JSONObject(carac.carac)
-
-                        // Build the characteristics string
-                        val characteristicsLine = StringBuilder()
-
-                        // Se crea la linea de caracteristicas.
-                        caracteristicasMostrar.forEachIndexed { index, characteristic ->
-                            if (caracJson.has(characteristic)) {
-                                val value = caracJson.getString(characteristic)
-                                val nombreCarac = caracteristicasNombres[index]
-                                characteristicsLine.append("$nombreCarac: $value, ")
+                // Display VehicleInfo
+                val vehicleInfo = vehicleData.datos
+                if (vehicleInfo != null) {
+                    val vehicleCarac = vehicleData.carac
+                    if (vehicleCarac != null) {
+                        for (carac in vehicleCarac) {
+                            // Create a container for each vehicle's info
+                            val vehicleInfoContainer = LinearLayout(requireContext()).apply {
+                                layoutParams = LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.MATCH_PARENT,
+                                    LinearLayout.LayoutParams.WRAP_CONTENT
+                                ).apply {
+                                    setMargins(0, 0, 0, 16) // Add some bottom margin between vehicles
+                                }
+                                orientation = LinearLayout.VERTICAL
+                                setBackgroundResource(R.drawable.vehicle_info_background) // Set the background
+                                setPadding(16, 16, 16, 16) // Add some padding
                             }
-                        }
-                        // Add the complete line to the container
-                        addTextViewToContainer(characteristicsLine.toString())
 
-                        addTextViewToContainer("Placa: ${vehicleInfo.licensePlate}")
-                        addTextViewToContainer("serial: ${vehicleInfo.serialNumber}")
-                        addTextViewToContainer("vin: ${vehicleInfo.vin}")
+                            // Add vehicle info to the container
+                            addTextViewToContainer(vehicleInfoContainer, "Marca: ${vehicleInfo.brandName}")
+                            addTextViewToContainer(vehicleInfoContainer, "Modelo: ${vehicleInfo.modelName}")
+                            addTextViewToContainer(vehicleInfoContainer, "Año: ${vehicleInfo.year}")
+                            addTextViewToContainer(vehicleInfoContainer, "vehicleId: ${carac.vehicleId}")
 
-                        currentResultContainerState.add(" ")
+                            // Build the characteristics string
+                            val characteristicsLine = StringBuilder()
 
-                        // Create and add the button
-                        val selectButton = Button(requireContext())
-                        selectButton.text = "Seleccionar"
-                        selectButton.setOnClickListener {
-                            // Handle button click (e.g., log the characteristic)
-                            addTextViewToContainer("vehicleId: ${carac.vehicleId}")
+                            // Parse the inner JSON string safely
+                            carac.carac?.let { caracString ->
+                                val caracJson = JSONObject(caracString)
 
-                            // TODO: ir al fragment para solicitar
-                            // Navigate to ReclamosFragment and pass the vehicleId
-                            val bundle = Bundle().apply {
-                                putString("brandName", vehicleInfo.brandName)
-                                putString("modelName", vehicleInfo.modelName)
-                                putString("year", vehicleInfo.year)
-                                putString("vehicleId", carac.vehicleId)
-                                putString("licensePlate", vehicleInfo.licensePlate)
-                                putString("serialNumber", vehicleInfo.serialNumber)
-                                putString("vin", vehicleInfo.vin)
-                                // Add VehicleCarac data (characteristics)
-                                putString("characteristicsLine", characteristicsLine.toString())
+                                // Create the characteristics line.
+                                caracteristicasMostrar.forEachIndexed { index, characteristic ->
+                                    if (caracJson.has(characteristic)) {
+                                        val value = caracJson.getString(characteristic)
+                                        val nombreCarac = caracteristicasNombres[index]
+                                        characteristicsLine.append("$nombreCarac: $value, ")
+                                    }
+                                }
                             }
-                            findNavController().navigate(R.id.action_nav_consultas_abiertas_to_nav_reclamos, bundle)
+                            // Add the complete line to the container
+                            addTextViewToContainer(vehicleInfoContainer, characteristicsLine.toString())
+
+                            addTextViewToContainer(vehicleInfoContainer, "Placa: ${vehicleInfo.licensePlate}")
+                            addTextViewToContainer(vehicleInfoContainer, "serial: ${vehicleInfo.serialNumber}")
+                            addTextViewToContainer(vehicleInfoContainer, "vin: ${vehicleInfo.vin}")
+
+                            // Create and add the button
+                            val selectButton = Button(requireContext()).apply {
+                                text = getString(R.string.seleccionar)
+                                // Apply the custom style here
+                                setTextAppearance(R.style.SelectButtonStyle)
+                                setOnClickListener {
+
+                                    // Navigate to ReclamosFragment and pass the vehicleId
+                                    val bundle = Bundle().apply {
+                                        putString("brandName", vehicleInfo.brandName)
+                                        putString("modelName", vehicleInfo.modelName)
+                                        putString("year", vehicleInfo.year)
+                                        putString("vehicleId", carac.vehicleId)
+                                        putString("licensePlate", vehicleInfo.licensePlate)
+                                        putString("serialNumber", vehicleInfo.serialNumber)
+                                        putString("vin", vehicleInfo.vin)
+                                        // Add VehicleCarac data (characteristics)
+                                        putString("characteristicsLine", characteristicsLine.toString())
+                                    }
+                                    findNavController().navigate(R.id.action_nav_consultas_abiertas_to_nav_reclamos, bundle)
+                                }
+                            }
+                            vehicleInfoContainer.addView(selectButton)
+
+                            resultContainer.addView(vehicleInfoContainer)
                         }
-                        resultContainer.addView(selectButton)
                     }
                 }
             }
+        } else {
+            showDialog(getString(R.string.no_se_encontraron_resultados))
         }
     }
 
-    private fun addTextViewToContainer(text: String) {
-        val textView = TextView(requireContext())
-        textView.text = text
-        resultContainer.addView(textView)
-        currentResultContainerState.add(text)
-    }
-
-    private fun restoreResultContainerState() {
-        resultContainer.removeAllViews()
-        val stateCopy = currentResultContainerState.toList()
-        if (stateCopy.isNotEmpty()) { // Only add buttons if there are results
-            var addButton = false // Flag to control button addition
-            for (text in stateCopy) {
-                if (text == " ") {
-                    addButton = true // Set the flag to add a button after the next text view
-                } else {
-                    addTextViewToContainer(text)
-                    if (addButton) {
-                        // Create and add the button
-                        val selectButton = Button(requireContext())
-                        selectButton.text = "Seleccionar"
-                        // ... (Add your button click listener here) ...
-//                        resultContainer.addView(selectButton)
-//                        addButton = false // Reset the flag
-                        // Add the button click listener here
-                        selectButton.setOnClickListener {
-                            // Handle button click (e.g., log the characteristic)
-                            // ... (Your existing button click logic) ...
-                        }
-                        resultContainer.addView(selectButton)
-                        addButton = false // Reset the flag
-                    }
-                }
+    private fun showDialog(message: String) {
+        AlertDialog.Builder(requireContext()) // Usar requireContext() directamente
+            .setTitle("Información") // Título del diálogo
+            .setMessage(message)     // Mensaje a mostrar
+            .setIcon(R.drawable.analyze_list_logs_search_icon) // Ícono personalizado
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()     // Cerrar el diálogo al hacer clic en "OK"
             }
-        }
+            .show() // Mostrar el diálogo
+    }
+
+    private fun addTextViewToContainer(container: LinearLayout, text: String) {val textView = TextView(requireContext()).apply {
+        this.text = text
+        layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+    }
+        container.addView(textView)
     }
 }
 

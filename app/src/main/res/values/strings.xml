@@ -125,5 +125,7 @@
     <string name="api_failure">API Falla</string>
     <string name="error_de_red_en_caso_de_falla">Error de red en caso de falla.</string>
     <string name="error_de_red_desconocido">Error de red desconocido.</string>
+    <string name="no_se_encontraron_resultados">No se encontraron resultados.</string>
+    <string name="ingrese_la_placa_o_el_serial">Ingrese la placa o el serial</string>
 
 </resources>

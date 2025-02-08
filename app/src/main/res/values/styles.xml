@@ -21,7 +21,7 @@
         <item name="android:layout_gravity">center</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/white</item>
-        <item name="android:background">@color/colorPrimaryButton</item>
+        <item name="android:backgroundTint">@color/my_button_color</item>
         <item name="android:gravity">center_horizontal|center_vertical</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:stateListAnimator">@null</item>
@@ -33,4 +33,8 @@
         <item name="android:padding">8dp</item> <!-- Espaciado interno -->
     </style>
 
+    <style name="SelectButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:backgroundTint">@color/select_button_color</item>
+        <item name="android:textColor">@color/my_high_contrast_text_color</item>
+    </style>
 </resources>
