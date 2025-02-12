@@ -515,13 +515,20 @@ class PresupuestoFragment : Fragment() {
             null
         }
         photoFile?.also {
+            Log.d("PresupuestoFragment", "Archivo temporal creado: ${it.absolutePath}")
             val photoURI: Uri = FileProvider.getUriForFile(
                 requireContext(),
-                "${requireContext().packageName}.fileprovider",
+                "${requireContext().packageName}.fileprovider", // Asegúrate de que coincida con el authority
                 it
             )
+            Log.d("PresupuestoFragment", "URI generada: $photoURI")
             currentPhotoUri = photoURI
-            takeVinNumberLauncher.launch(photoURI)
+            try {
+                takeVinNumberLauncher.launch(photoURI)
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Error al tomar la foto: ${e.message}", Toast.LENGTH_SHORT).show()
+                Log.e("PresupuestoFragment", "Error al tomar la foto", e)
+            }
         }
     }
 
@@ -585,11 +592,16 @@ class PresupuestoFragment : Fragment() {
         photoFile?.also {
             val photoURI: Uri = FileProvider.getUriForFile(
                 requireContext(),
-                "${requireContext().packageName}.fileprovider",
+                "${requireContext().packageName}.fileprovider", // Asegúrate de que coincida con el authority
                 it
             )
             currentPhotoUri = photoURI
-            takePhotoLauncher.launch(photoURI) // Usar el launcher para tomar la foto
+            try {
+                takePhotoLauncher.launch(photoURI)
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Error al tomar la foto: ${e.message}", Toast.LENGTH_SHORT).show()
+                Log.e("PresupuestoFragment", "Error al tomar la foto", e)
+            }
         }
     }
 
