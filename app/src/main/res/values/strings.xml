@@ -81,7 +81,7 @@
     <string name="subir_foto">Subir imagen.</string>
     <string name="error_message">Error: %1$s</string>
     <string name="AI_cloud">"MotionsCloud Vehicle Assessment Report\nPowered by AI Computer Vision Technologies"</string>
-    <string name="general_info_format">Número de caso: %1$s\nNúmero de Vin: %2$s\nDetalles: (Precio mano de obra: %3$s, Tasa mano de obra: %4$s)</string>
+    <string name="general_info_format">Número de caso: %1$s\nNúmero de Vin: %2$s\nDetalles de reparación: (P. Mano de obra $: %3$s)|Mano de obra $: %4$s</string>
     <string name="linea_separador">_________________________________________________</string>
     <string name="totals_format">Sub total partes y piezas: %1$s\nSub total pintura: %2$s\nSub total mano de obra: %3$s\nSub total: %4$s\nImpuesto: %5$s\nTotal: %6$s</string>
 
@@ -161,13 +161,12 @@
         <b>Lado 1:</b> %1$s<br/>
         <b>Lado 2:</b> %2$s<br/>
         <b>Daño:</b> %3$s<br/>
-        <b>Confianza:</b> %4$s<br/>
-        <b>Tratamiento:</b> %5$s<br/>
-        <b>Costo de la pieza o parte:</b> %6$s<br/>
-        <b>Hora de pintura:</b> %7$s<br/>
-        <b>Costo material de pintura:</b> %8$s<br/>
-        <b>Horas de trabajo:</b> %9$s<br/>
-        <b>Costo laboral:</b> %10$s<br/>
+        <b>Tratamiento:</b> %4$s<br/>
+        <b>Costo de la pieza o parte:</b> %5$s<br/>
+        <b>Hora de pintura:</b> %6$s<br/>
+        <b>Costo material de pintura:</b> %7$s<br/>
+        <b>Horas de trabajo:</b> %8$s<br/>
+        <b>Mano de obra:</b> %9$s<br/>
         ]]>
     </string>
 
@@ -183,4 +182,19 @@
     %3$s: The third string argument ( detail.getString("damage") )
     ...and so on, up to %10$s for the tenth argument.
     The s indicates that these are string values.
-    Order: The order of the format specifiers (%1$s, %2$s, etc.) must match the order of the arguments you pass to getString() in your Kotlin code.-->
+    Order: The order of the
+
+        <string name="detail_info_format">
+        <![CDATA[
+        <b>Lado 1:</b> %1$s<br/>
+        <b>Lado 2:</b> %2$s<br/>
+        <b>Daño:</b> %3$s<br/>
+        <b>Confianza:</b> %4$s<br/>
+        <b>Tratamiento:</b> %5$s<br/>
+        <b>Costo de la pieza o parte:</b> %6$s<br/>
+        <b>Hora de pintura:</b> %7$s<br/>
+        <b>Costo material de pintura:</b> %8$s<br/>
+        <b>Horas de trabajo:</b> %9$s<br/>
+        <b>Costo laboral:</b> %10$s<br/>
+        ]]>
+    </string> -->
