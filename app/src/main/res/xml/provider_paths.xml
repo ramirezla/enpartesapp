@@ -6,5 +6,7 @@
     <external-cache-path name="my_cache" path="." />
     <!-- Ruta para archivos en el directorio de archivos internos -->
     <files-path name="internal_files" path="." />
+    <!-- Ruta para archivos en el directorio público de descargas -->
+    <external-path name="downloads" path="Download" />
 </paths>
 <!-- directorio externo privado de la aplicación (/storage/emulated/0/Android/data/com.ehome.enpartesapp/files/). -->

@@ -274,25 +274,6 @@ class ConsultaFragment : Fragment() {
             }
             detailContainer.addView(detailTitle) // Add the title to the detail container
 
-            // Detail Information
-//            val detailInfo = TextView(requireContext()).apply {
-//                val formattedText = getString(
-//                    R.string.detail_info_format,
-//                    detail.getString("side_1"), // Replaces %1$s
-//                    detail.getString("side_2"), // Replaces %2$s
-//                    detail.getString("damage"), // Replaces %3$s
-//                    detail.getString("confidence"), // Replaces %4$s
-//                    detail.getString("treatment"), // Replaces %5$s
-//                    detail.getString("part_cost"), // Replaces %6$s
-//                    detail.getString("paint_hour"), // Replaces %7$s
-//                    detail.getString("paint_material_cost"), // Replaces %8$s
-//                    detail.getString("labour_hour"), // Replaces %9$s
-//                    detail.getString("labour_cost") // Replaces %10$s
-//                ) // Format the text using string resources
-//                // Use HtmlCompat.fromHtml() to parse the HTML
-//                text = HtmlCompat.fromHtml(formattedText, HtmlCompat.FROM_HTML_MODE_LEGACY)
-//                setTextColor(Color.BLACK)
-//            }
             val detailInfo = TextView(requireContext()).apply {
                 val formattedText = getString(
                     R.string.detail_info_format,
@@ -410,7 +391,7 @@ class ConsultaFragment : Fragment() {
                         withContext(Dispatchers.Main) {
                             val uri = FileProvider.getUriForFile(
                                 requireContext(),
-                                "com.ehome.enpartesapp.provider", // Debe coincidir con el manifest
+                                "com.ehome.enpartesapp.fileprovider", // Ahora coincide con el manifest
                                 file
                             )
                             val intent = Intent(Intent.ACTION_VIEW).apply {
