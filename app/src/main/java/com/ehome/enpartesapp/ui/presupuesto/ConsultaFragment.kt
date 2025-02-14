@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -45,7 +46,7 @@ import java.util.Locale
 
 class ConsultaFragment : Fragment() {
 
-    private val requestCodePermissions = 101
+    private val requestCodePermissions = 101 // Código para identificar la solicitud de permisos.
 
     // Usamos ActivityResultLauncher para manejar los permisos
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
@@ -55,6 +56,7 @@ class ConsultaFragment : Fragment() {
     private lateinit var btnConsultar: Button
     private lateinit var llResultContainer: LinearLayout
     private lateinit var btnDownloadPdf: Button
+    private var pdfUrl: String? = null // Variable para almacenar la URL del PDF
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -92,8 +94,8 @@ class ConsultaFragment : Fragment() {
     }
 
     private fun consultarCaso() {
-        // Clear the container before each query
-        llResultContainer.removeAllViews()
+        llResultContainer.removeAllViews() // Limpia el contenedor de resultados.
+        pdfUrl = null // Reinicia la URL del PDF.
 
         val caseNumber = etCaseNumber.text.toString()
         val caseToken = etCaseToken.text.toString()
@@ -109,6 +111,7 @@ class ConsultaFragment : Fragment() {
             return
         }
 
+        // Crea el objeto JSON para la solicitud.
         val jsonObject = JSONObject().apply {
             put("case_number", caseNumber)
             put("case_token", caseToken)
@@ -139,6 +142,15 @@ class ConsultaFragment : Fragment() {
                         displayFormattedData(jsonResponse)
                         Log.d("ConsultaFragment", getString(R.string.respuesta_del_servidor, jsonResponse))
                         //Log.d("ConsultaFragment", "Respuesta del servidor: $jsonResponse")
+
+                        if (jsonResponse.has("pdf_url")) {
+                            pdfUrl = jsonResponse.getString("pdf_url")
+                        }
+
+                        if (pdfUrl.isNullOrEmpty()) {
+                        } else {
+                            showPdfConfirmationDialog()
+                        }
 
                     } else {
                         // Respuesta con error (400, 404, 500)
@@ -450,6 +462,41 @@ class ConsultaFragment : Fragment() {
                     //Log.e("DownloadPDF", "Error desconocido", e)
                     e.printStackTrace()}
             }
+        }
+    }
+
+    // Muestra un Diálogo de Confirmación para Ver el PDF
+    private fun showPdfConfirmationDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.ver_pdf))
+            .setMessage(getString(R.string.desea_ver_el_pdf))
+            .setIcon(R.drawable.analyze_list_logs_search_icon) // Ícono personalizado
+            .setPositiveButton(getString(R.string.si)) { dialog, _ ->
+                // Abrir el PDF usando la URL
+                openPdfFromUrl(pdfUrl)
+                dialog.dismiss()
+            }
+            .setNegativeButton(getString(R.string.no)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun openPdfFromUrl(pdfUrl: String?) {
+        if (pdfUrl.isNullOrEmpty()) {
+            showErrorDialog(getString(R.string.no_se_encontro_url_pdf))
+            return
+        }
+
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse(pdfUrl)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+
+        try {
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            showErrorDialog(getString(R.string.no_hay_aplicacion_para_abrir_pdf))
         }
     }
 

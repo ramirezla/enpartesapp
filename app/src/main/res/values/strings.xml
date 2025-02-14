@@ -156,6 +156,11 @@
     <string name="serial">Serial:</string>
     <string name="vin">Vin:</string>
     <string name="informacion">Información:</string>
+    <string name="ver_pdf">Información</string>
+    <string name="desea_ver_el_pdf">Desea ver el pdf con fotos?</string>
+    <string name="no_se_encontro_url_pdf">No se encontro url del pdf</string>
+    <string name="no_hay_aplicacion_para_abrir_pdf">No hay aplicacion para abrir el pdf</string>
+
     <string name="detail_info_format">
         <![CDATA[
         <b>Lado 1:</b> %1$s<br/>

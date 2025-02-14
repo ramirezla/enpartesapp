@@ -220,14 +220,5 @@ class ConsultasAbiertasFragment : Fragment() {
             .show() // Mostrar el diálogo
     }
 
-//    private fun addTextViewToContainer(container: LinearLayout, text: String) {val textView = TextView(requireContext()).apply {
-//        this.text = text
-//        layoutParams = LinearLayout.LayoutParams(
-//            LinearLayout.LayoutParams.MATCH_PARENT,
-//            LinearLayout.LayoutParams.WRAP_CONTENT
-//        )
-//    }
-//        container.addView(textView)
-//    }
 }
 
