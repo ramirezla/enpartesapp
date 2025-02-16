@@ -7,6 +7,8 @@
     <!-- Ruta para archivos en el directorio de archivos internos -->
     <files-path name="internal_files" path="." />
     <!-- Ruta para archivos en el directorio público de descargas -->
-    <external-path name="downloads" path="Download" />
+    <!--<external-path name="downloads" path="Download" />-->
+    <external-path name="external_files" path="." />
 </paths>
-<!-- directorio externo privado de la aplicación (/storage/emulated/0/Android/data/com.ehome.enpartesapp/files/). -->
+<!-- directorio externo privado de la aplicación (/storage/emulated/0/Android/data/com.ehome.enpartesapp/files/).-->
+

@@ -8,8 +8,9 @@
 //import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClientObject {
-    private const val BASE_URL = "http://local.enpartes.com2/" // Your base URL
-    rivate const val BASE_URL = "http://192.168.1.127/" // Your base URL
+    //private const val BASE_URL = "http://local.enpartes.com2/" // Your base URL
+    //private const val BASE_URL = "http://192.168.1.127/" // ip URL desde eHome ethernet
+    private const val BASE_URL = "http://192.168.1.143/" // ip URL desde eHome ethernet
 
     val instance: ApiService by lazy {
         //Create a logging interceptor

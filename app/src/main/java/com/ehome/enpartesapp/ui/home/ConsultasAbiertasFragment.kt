@@ -60,7 +60,8 @@ interface ApiService {
 
 // Retrofit client
 object RetrofitClient {
-    private const val BASE_URL = "http://192.168.1.127"
+    //private const val BASE_URL = "http://192.168.1.127/" // ip URL desde eHome ethernet
+    private const val BASE_URL = "http://192.168.1.143/" // ip URL desde eHome ethernet
 
     val instance: ApiService by lazy {
         val retrofit = Retrofit.Builder()

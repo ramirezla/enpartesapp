@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.icu.util.Calendar
@@ -49,13 +50,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
-
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- * Que datos son obligatorios?
- * Obligatorio minimo 1 foto?
- * Se puede enviar varias fotos del mismo tipo?
- */
+import android.Manifest
 
 // Creamos un modelo de datos para representar cada línea de fotos.
 data class FotoItem(
@@ -76,9 +71,10 @@ class FotoAdapter(
 
     var currentPosition: Int = -1 // Posición actual
 
+    // Inflar el layout del item y crear el ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FotoViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.item_foto, parent, false)
-        return FotoViewHolder(view)
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.foto_item, parent, false)
+        return FotoViewHolder(itemView)
     }
 
     override fun onBindViewHolder(holder: FotoViewHolder, position: Int) {
@@ -93,6 +89,14 @@ class FotoAdapter(
         val selectedIndex = tiposFoto.indexOf(fotoItem.tipoFoto)
         if (selectedIndex >= 0) {
             holder.spinnerTipoFoto.setSelection(selectedIndex)
+        }
+
+        // Listener para cambios en el Spinner
+        holder.spinnerTipoFoto.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
+                fotoItem.tipoFoto = tiposFoto[pos]
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
         // Listener para cambios en el Spinner
@@ -134,6 +138,7 @@ class FotoAdapter(
 
     override fun getItemCount(): Int = fotoList.size
 
+    // Recibir la vista inflada en el constructor
     class FotoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val btnTomarFoto: ImageButton = itemView.findViewById(R.id.btnTomarFoto)
         val btnSubirFoto: ImageButton = itemView.findViewById(R.id.btnSubirFoto)
@@ -168,6 +173,7 @@ class PresupuestoFragment : Fragment() {
     // Declara los ActivityResultLauncher
     private lateinit var takePhotoLauncher: ActivityResultLauncher<Uri>
     private lateinit var uploadPhotoLauncher: ActivityResultLauncher<String>
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
     private lateinit var etCaseNumber: TextInputEditText
     private lateinit var etFullName: TextInputEditText
@@ -179,6 +185,57 @@ class PresupuestoFragment : Fragment() {
     // Botones de cancelar y aceptar
     private lateinit var btnCancelar: Button
     private lateinit var btnAceptar: Button
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Inicializar el ActivityResultLauncher para solicitar el permiso de la cámara
+        requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                // Permiso concedido, proceder a tomar la foto
+                tomarFoto(adapter.currentPosition)
+            } else {
+                // Permiso denegado, mostrar un mensaje al usuario
+                Toast.makeText(requireContext(), "Permiso de cámara denegado", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Inicializar el ActivityResultLauncher para tomar una foto
+        takePhotoLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                // La foto se ha tomado correctamente
+                currentPhotoUri?.let { uri ->
+                    fotoList[adapter.currentPosition].imagenUri = uri
+                    fotoList[adapter.currentPosition].isFotoTomada = true
+                    adapter.notifyItemChanged(adapter.currentPosition)
+                }
+            }
+        }
+
+        // Inicializar el ActivityResultLauncher para seleccionar una foto de la galería
+        uploadPhotoLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri?.let {
+                fotoList[adapter.currentPosition].imagenUri = it
+                fotoList[adapter.currentPosition].isFotoTomada = false
+                adapter.notifyItemChanged(adapter.currentPosition)
+            }
+        }
+
+        // Inicializar los ActivityResultLauncher para el VIN Number
+        uploadVinNumberLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            uri?.let {
+                imgFotoVin.setImageURI(uri) // Mostrar la foto en el ImageView
+            }
+        }
+
+        takeVinNumberLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                currentPhotoUri?.let { uri ->
+                    imgFotoVin.setImageURI(uri) // Mostrar la foto en el ImageView
+                }
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -246,7 +303,6 @@ class PresupuestoFragment : Fragment() {
         )
         recyclerView.adapter = adapter
 
-        // Inicializar los ActivityResultLauncher para el VIN Number
         uploadVinNumberLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             uri?.let {
                 imgFotoVin.setImageURI(uri) // Mostrar la foto en el ImageView
@@ -261,7 +317,6 @@ class PresupuestoFragment : Fragment() {
             }
         }
 
-        // Configurar los botones del VIN Number
         btnTomarFotoVin.setOnClickListener {
             tomarFotoVinNumber()
         }
@@ -314,13 +369,10 @@ class PresupuestoFragment : Fragment() {
         fotoList.clear()
         fotoList.add(FotoItem()) // Agregar una línea vacía inicial
         adapter.notifyDataSetChanged() // Notificar al adaptador que los datos han cambiado
-
-        // Toast.makeText(requireContext(), "Formulario limpiado", Toast.LENGTH_SHORT).show()
     }
 
     private fun validarYProcesarDatos() {
         // Validar que todos los campos estén completos
-        //Log.d("FotoList", fotoList.toString())
         if (validarCampos() && validarFotoVin() && validarFotosVehiculo()) {
             // Procesar los datos (guardar en base de datos, enviar a servidor, etc.)
             procesarDatos()
@@ -378,7 +430,6 @@ class PresupuestoFragment : Fragment() {
             Log.d("Validacion", "Hay fotos con tipos no permitidos")
             return false
         }
-
         return true
     }
 
@@ -443,12 +494,8 @@ class PresupuestoFragment : Fragment() {
                             val caseTokenObject = jsonResponse.getJSONObject("caseToken")
                             caseToken = caseTokenObject.getString("caseTokenValue")
 
-                            // Llamar a la función para enviar las fotos
-                            // Crear una variable local para evitar problemas de smart cast
                             val token = caseToken
-                            //val token = "GG87jCWGoAqAoykNLxCgYZQ7"  // borrar luego de pasar las pruebas
                             if (token != null) {
-                                //showConfirmationDialog(token)
                                 enviarFotosAlServidor(token)
                                 showDialog("Datos enviados correctamente. caseToken: $caseToken")
                             } else {
@@ -508,27 +555,34 @@ class PresupuestoFragment : Fragment() {
     }
 
     private fun tomarFotoVinNumber() {
-        val photoFile: File? = try {
-            crearArchivoTemporal("vin_number")
-        } catch (ex: IOException) {
-            Toast.makeText(requireContext(), "Error al crear el archivo", Toast.LENGTH_SHORT).show()
-            null
-        }
-        photoFile?.also {
-            Log.d("PresupuestoFragment", "Archivo temporal creado: ${it.absolutePath}")
-            val photoURI: Uri = FileProvider.getUriForFile(
-                requireContext(),
-                "${requireContext().packageName}.fileprovider", // Asegúrate de que coincida con el authority
-                it
-            )
-            Log.d("PresupuestoFragment", "URI generada: $photoURI")
-            currentPhotoUri = photoURI
-            try {
-                takeVinNumberLauncher.launch(photoURI)
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error al tomar la foto: ${e.message}", Toast.LENGTH_SHORT).show()
-                Log.e("PresupuestoFragment", "Error al tomar la foto", e)
+        // Verificar si el permiso de la cámara está concedido
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            // Permiso concedido, proceder a tomar la foto
+            val photoFile: File? = try {
+                crearArchivoTemporal("vin_number")
+            } catch (ex: IOException) {
+                Toast.makeText(requireContext(), "Error al crear el archivo", Toast.LENGTH_SHORT).show()
+                null
             }
+            photoFile?.also {
+                Log.d("PresupuestoFragment", "Archivo temporal creado: ${it.absolutePath}")
+                val photoURI: Uri = FileProvider.getUriForFile(
+                    requireContext(),
+                    "${requireContext().packageName}.fileprovider", // Asegúrate de que coincida con el authority
+                    it
+                )
+                Log.d("PresupuestoFragment", "URI generada: $photoURI")
+                currentPhotoUri = photoURI
+                try {
+                    takeVinNumberLauncher.launch(photoURI)
+                } catch (e: Exception) {
+                    Toast.makeText(requireContext(), "Error al tomar la foto: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Log.e("PresupuestoFragment", "Error al tomar la foto", e)
+                }
+            }
+        } else {
+            // Permiso no concedido, solicitarlo al usuario
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
@@ -548,10 +602,8 @@ class PresupuestoFragment : Fragment() {
         // Listener para manejar la selección del tipo de vehículo
         spinnerTipoVehiculo.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                //val tipoSeleccionado = tiposVehiculo[position]
                 // Aquí puedes guardar el tipo de vehículo seleccionado si es necesario
             }
-
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
@@ -570,8 +622,6 @@ class PresupuestoFragment : Fragment() {
         }
     }
 
-    // Vamos a crear un archivo con un nombre específico basado en el tipo de foto.
-    // Crear el nombre del vin_number asignandole un timestamp para evitar colisiones
     private fun crearArchivoTemporal(tipoFoto: String): File {
         val storageDir: File? = requireContext().getExternalFilesDir(null)
         val nombreArchivo = when (tipoFoto) {
@@ -582,26 +632,33 @@ class PresupuestoFragment : Fragment() {
     }
 
     private fun tomarFoto(position: Int) {
-        val tipoFoto = fotoList[position].tipoFoto
-        val photoFile: File? = try {
-            crearArchivoTemporal(tipoFoto)
-        } catch (ex: IOException) {
-            Toast.makeText(requireContext(), "Error al crear el archivo", Toast.LENGTH_SHORT).show()
-            null
-        }
-        photoFile?.also {
-            val photoURI: Uri = FileProvider.getUriForFile(
-                requireContext(),
-                "${requireContext().packageName}.fileprovider", // Asegúrate de que coincida con el authority
-                it
-            )
-            currentPhotoUri = photoURI
-            try {
-                takePhotoLauncher.launch(photoURI)
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error al tomar la foto: ${e.message}", Toast.LENGTH_SHORT).show()
-                Log.e("PresupuestoFragment", "Error al tomar la foto", e)
+        // Verificar si el permiso de la cámara está concedido
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            // Permiso concedido, proceder a tomar la foto
+            val tipoFoto = fotoList[position].tipoFoto
+            val photoFile: File? = try {
+                crearArchivoTemporal(tipoFoto)
+            } catch (ex: IOException) {
+                Toast.makeText(requireContext(), "Error al crear el archivo", Toast.LENGTH_SHORT).show()
+                null
             }
+            photoFile?.also {
+                val photoURI: Uri = FileProvider.getUriForFile(
+                    requireContext(),
+                    "${requireContext().packageName}.fileprovider", // Asegúrate de que coincida con el authority
+                    it
+                )
+                currentPhotoUri = photoURI
+                try {
+                    takePhotoLauncher.launch(photoURI)
+                } catch (e: Exception) {
+                    Toast.makeText(requireContext(), "Error al tomar la foto: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Log.e("PresupuestoFragment", "Error al tomar la foto", e)
+                }
+            }
+        } else {
+            // Permiso no concedido, solicitarlo al usuario
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA)
         }
     }
 
@@ -675,7 +732,6 @@ class PresupuestoFragment : Fragment() {
                     if (response.isSuccessful) {
                         // La solicitud fue exitosa (código 200)
                         val responseBody = response.body?.string()
-                        //Toast.makeText(requireContext(), "Fotos enviadas correctamente, Ten en cuenta que la evaluación puede tardar entre 10 y 15 minutos.", Toast.LENGTH_SHORT).show()
                         Log.d("PresupuestoFragment", "Respuesta del servidor: $responseBody")
                     } else {
                         // La solicitud falló (códigos 400, 500, etc.)
@@ -724,28 +780,3 @@ class PresupuestoFragment : Fragment() {
             .show() // Mostrar el diálogo
     }
 }
-
-/*
-Datos de ejemplo:
-"Casenumber":"OLIM3",
-"FullName":"OLIMPICO",
-"Email":"jperez@enpartes.com",
-"Dateofinspection":"01.01.2025", "30/1/2025"
-"VINnumber":"YV1MV36V1K2601947",
-"Language":"en"
-
-Casenumber: OLIM4-03022025
-caseToken: 2tiWaxsBZbN39fQ4yPFsDCDE
-
-GG87jCWGoAqAoykNLxCgYZQ7
-
-Casenumber: OLIM4-03022025-2
-caseToken: vwZxPxpkpzb3HasGtc3JZfn4
-
-Casenumber: OLIM4-03022025-3
-caseToken: Fa6j3spsARhqRFb7AYiry1iA
-
-CaseNumber: OLIM4-Duster
-casetoken; bPq2r6Sr5vDYs1N9mDJQess1
- */
-

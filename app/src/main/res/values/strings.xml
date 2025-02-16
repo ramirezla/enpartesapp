@@ -80,10 +80,12 @@
     <string name="tomar_foto">Tomar foto.</string>
     <string name="subir_foto">Subir imagen.</string>
     <string name="error_message">Error: %1$s</string>
+    <string name="previsualizacion_foto">Previsualizacion de la foto</string>
     <string name="AI_cloud">"MotionsCloud Vehicle Assessment Report\nPowered by AI Computer Vision Technologies"</string>
     <string name="general_info_format">Número de caso: %1$s\nNúmero de Vin: %2$s\nDetalles de reparación: (P. Mano de obra $: %3$s)|Mano de obra $: %4$s</string>
     <string name="linea_separador">_________________________________________________</string>
     <string name="totals_format">Sub total partes y piezas: %1$s\nSub total pintura: %2$s\nSub total mano de obra: %3$s\nSub total: %4$s\nImpuesto: %5$s\nTotal: %6$s</string>
+    <string name="miniatura_de_la_foto">Miniatura de la imagen.</string>
 
     <!-- Textos de Mensajes -->
     <string name="ingrese_placa_o_serial_del_vehiculo">Ingrese la placa o el Serial del vehículo.</string>
