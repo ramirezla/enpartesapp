@@ -78,7 +78,8 @@ class ReclamosFragment : Fragment() {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         val url =
-                            "http://192.168.1.127/integracion?q={\"action\":\"GETVEHICLECLAIMS\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"vehicleId\":\"$vehicleId\"}"
+                            //"http://192.168.1.143/integracion?q={\"action\":\"GETVEHICLECLAIMS\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"vehicleId\":\"$vehicleId\"}"
+                            "http://192.168.0.100/integracion?q={\"action\":\"GETVEHICLECLAIMS\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"vehicleId\":\"$vehicleId\"}"
                         val response = makeApiRequest(url)
 
                         withContext(Dispatchers.Main) {
@@ -91,7 +92,8 @@ class ReclamosFragment : Fragment() {
                                     if (claim.claimId != 0) {
                                         CoroutineScope(Dispatchers.IO).launch {
                                             val partsUrl =
-                                                "http://192.168.1.127/integracion?q={\"action\":\"GETPARTSCLAIM\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"claimId\":\"${claim.claimId}\"}"
+                                                //"http://192.168.1.143/integracion?q={\"action\":\"GETPARTSCLAIM\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"claimId\":\"${claim.claimId}\"}"
+                                                "http://192.168.0.100/integracion?q={\"action\":\"GETPARTSCLAIM\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"claimId\":\"${claim.claimId}\"}"
                                             val partsResponse = makeApiRequest(partsUrl)
 
                                             withContext(Dispatchers.Main) {

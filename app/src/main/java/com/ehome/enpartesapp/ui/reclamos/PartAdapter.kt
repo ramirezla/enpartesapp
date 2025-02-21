@@ -19,7 +19,7 @@ class PartAdapter(private val parts: List<ReclamosFragment.Part>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PartViewHolder {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.part_item, parent, false)
+            .inflate(R.layout.item_partes, parent, false)
         return PartViewHolder(itemView)
     }
 

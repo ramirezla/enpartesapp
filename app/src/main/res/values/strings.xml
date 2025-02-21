@@ -4,6 +4,9 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="version">Versión: %1$s</string>
     <string name="version_na">Version N/A</string>
+    <string name="solicitando_permisos">Solicitando Permisos...</string>
+    <string name="permisos_denegados">Permisos Denegados</string>
+    <string name="para_usar_la_aplicacion_debes_conceder_todos_los_permisos">Para usar la aplicación, debes conceder todos los permisos.</string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>

@@ -1,10 +1,10 @@
 package com.ehome.enpartesapp.ui.presupuesto
 
-class PhotoTypeAdapter {
+class BorrarPhotoTypeAdapter {
 }
 
-//class PhotoTypeAdapter(private val photoTypes: List<Pair<String, String>>, private val savePhotoWithSelectedType: (String) -> Unit) :
-//    RecyclerView.Adapter<PhotoTypeAdapter.ViewHolder>() {
+//class BorrarPhotoTypeAdapter(private val photoTypes: List<Pair<String, String>>, private val savePhotoWithSelectedType: (String) -> Unit) :
+//    RecyclerView.Adapter<BorrarPhotoTypeAdapter.ViewHolder>() {
 //
 //    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 //        val textView: TextView = itemView.findViewById(R.id.photo_type_text)

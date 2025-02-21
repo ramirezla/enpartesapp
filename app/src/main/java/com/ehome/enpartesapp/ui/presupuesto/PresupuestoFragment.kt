@@ -73,7 +73,7 @@ class FotoAdapter(
 
     // Inflar el layout del item y crear el ViewHolder
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FotoViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.foto_item, parent, false)
+        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_foto, parent, false)
         return FotoViewHolder(itemView)
     }
 

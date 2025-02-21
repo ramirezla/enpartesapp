@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.ehome.enpartesapp.R
 
-class PhotoItemAdapter(private val photoItems: MutableList<PhotoItem>) : RecyclerView.Adapter<PhotoItemAdapter.ViewHolder>() {
+class BorrarPhotoItemAdapter(private val photoItems: MutableList<PhotoItem>) : RecyclerView.Adapter<BorrarPhotoItemAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // Obtén las referencias a los elementos del layout
@@ -14,7 +14,7 @@ class PhotoItemAdapter(private val photoItems: MutableList<PhotoItem>) : Recycle
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.photo_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_foto, parent, false)
         return ViewHolder(view)
     }
 
