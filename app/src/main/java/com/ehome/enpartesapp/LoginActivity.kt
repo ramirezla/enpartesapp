@@ -111,8 +111,8 @@ class LoginActivity : AppCompatActivity() {
     // Crea el servicio para preguntar a integracion
     object RetrofitClient {
         //private const val BASE_URL = "http://192.168.1.127/" // ip URL desde eHome ethernet
-        //private const val BASE_URL = "http://192.168.1.143/" // ip URL desde eHome wifi
-        private const val BASE_URL = "http://192.168.0.100/" // ip URL desde olax ethernet
+        private const val BASE_URL = "http://192.168.1.143/" // ip URL desde eHome wifi
+        //private const val BASE_URL = "http://192.168.0.100/" // ip URL desde olax ethernet
         //private const val BASE_URL = "http://10.172.18.11/" // ip URL desde la oficina
         //private const val BASE_URL = "http://192.168.220.219/" // ip URL desde pdvsa AIT_OriNor wifi
 

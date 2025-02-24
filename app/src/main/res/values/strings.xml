@@ -4,7 +4,7 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="version">Versión: %1$s</string>
     <string name="version_na">Version N/A</string>
-    <string name="solicitando_permisos">Solicitando Permisos...</string>
+    <string name="solicitando_permisos">Solicitando Permisos.</string>
     <string name="permisos_denegados">Permisos Denegados</string>
     <string name="para_usar_la_aplicacion_debes_conceder_todos_los_permisos">Para usar la aplicación, debes conceder todos los permisos.</string>
 
@@ -131,6 +131,8 @@
     <string name="no_se_encontraron_resultados">No se encontraron resultados.</string>
     <string name="ingrese_la_placa_o_el_serial">Ingrese la placa o el serial</string>
     <string name="lista_de_reclamos">Listado de reclamos</string>
+    <string name="respuesta_vacia_del_servidor">Respuesta vacia del servidor</string>
+    <string name="error_al_procesar_la_respuesta_del_servidor">Error al procesar la respuesta del servidor</string>
 
     <string name="id_solicitud">ID Solicitud: %s</string>
     <string name="sin_numero">Sin número: %s</string>

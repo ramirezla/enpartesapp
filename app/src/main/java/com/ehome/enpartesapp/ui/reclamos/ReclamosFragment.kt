@@ -1,5 +1,6 @@
 package com.ehome.enpartesapp.ui.reclamos
 
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ehome.enpartesapp.R
 import com.ehome.enpartesapp.databinding.FragmentReclamosBinding
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,9 +24,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.Locale
+import java.io.IOException
+
+//private const val BASE_URL = "http://192.168.0.100/" // ip URL desde olax ethernet
+ private const val BASE_URL = "http://192.168.1.143/"  // ip desde eHome wifi
+private const val PATH = "integracion"
+private const val ACTIONGETVEHICLECLAIMS = "GETVEHICLECLAIMS"
+private const val ACTIONGETPARTSCLAIM = "GETPARTSCLAIM"
+private const val ACCESS_CODE = "123456"
+private const val C_KEY = "12345"
 
 class ReclamosFragment : Fragment() {
 
@@ -40,6 +48,50 @@ class ReclamosFragment : Fragment() {
     ): View {
         _binding = FragmentReclamosBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    // Ejemplo
+    // "http://192.168.1.143/integracion?q={\"action\":\"GETVEHICLECLAIMS\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"vehicleId\":\"$vehicleId\"}"
+    private fun buildVehiculoUrl(vehicleId: String): String {
+        val jsonQuery = """
+        {
+            "action": "$ACTIONGETVEHICLECLAIMS",
+            "accessCode": "$ACCESS_CODE",
+            "cKey": "$C_KEY",
+            "vehicleId": "$vehicleId"
+        }
+    """.trimIndent()
+
+        val uri = Uri.parse(BASE_URL).buildUpon()
+            .appendPath(PATH)
+            .appendQueryParameter("q", jsonQuery)
+            .build()
+
+        return uri.toString()
+    }
+
+    // Ejemplo
+    //"http://192.168.1.143/integracion?q={\"action\":\"GETPARTSCLAIM\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"claimId\":\"${claim.claimId}\"}"
+    private fun buildPartesUrl(claimId: Int): String {
+        val jsonQuery = """
+        {
+            "action": "$ACTIONGETPARTSCLAIM",
+            "accessCode": "$ACCESS_CODE",
+            "cKey": "$C_KEY",
+            "claimId": "$claimId"
+        }
+    """.trimIndent()
+
+        val uri = Uri.parse(BASE_URL).buildUpon()
+            .appendPath(PATH)
+            .appendQueryParameter("q", jsonQuery)
+            .build()
+
+        return uri.toString()
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -77,24 +129,32 @@ class ReclamosFragment : Fragment() {
             if (vehicleId != null) {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
-                        val url =
-                            //"http://192.168.1.143/integracion?q={\"action\":\"GETVEHICLECLAIMS\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"vehicleId\":\"$vehicleId\"}"
-                            "http://192.168.0.100/integracion?q={\"action\":\"GETVEHICLECLAIMS\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"vehicleId\":\"$vehicleId\"}"
-                        val response = makeApiRequest(url)
+                        val vehiculoUrl = buildVehiculoUrl(vehicleId)
+                        val response = makeApiRequest(vehiculoUrl)
 
                         withContext(Dispatchers.Main) {
-                            val claimsList: List<Claim> = Gson().fromJson(
-                                response,
-                                object : TypeToken<List<Claim>>() {}.type
-                            )
+                            if (response.isEmpty()) {
+                                showToast(getString(R.string.respuesta_vacia_del_servidor))
+                                return@withContext
+                            }
+
+                            val claimsList: List<Claim> = try {
+                                Gson().fromJson(
+                                    response,
+                                    object : TypeToken<List<Claim>>() {}.type
+                                )
+                            } catch (e: JsonSyntaxException) {
+                                showToast(getString(R.string.error_al_procesar_la_respuesta_del_servidor))
+                                Log.e("ReclamosFragment", "Error parsing JSON: ${e.message}")
+                                return@withContext
+                            }
+
                             if (claimsList.isNotEmpty()) {
                                 claimAdapter = ClaimAdapter(claimsList) { claim ->
                                     if (claim.claimId != 0) {
                                         CoroutineScope(Dispatchers.IO).launch {
-                                            val partsUrl =
-                                                //"http://192.168.1.143/integracion?q={\"action\":\"GETPARTSCLAIM\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"claimId\":\"${claim.claimId}\"}"
-                                                "http://192.168.0.100/integracion?q={\"action\":\"GETPARTSCLAIM\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"claimId\":\"${claim.claimId}\"}"
-                                            val partsResponse = makeApiRequest(partsUrl)
+                                            val partesUrl = buildPartesUrl(claim.claimId)
+                                            val partsResponse = makeApiRequest(partesUrl)
 
                                             withContext(Dispatchers.Main) {
                                                 val partsList: List<Part> =
@@ -154,11 +214,26 @@ class ReclamosFragment : Fragment() {
     }
 
     // Function to make API request
+//    private fun makeApiRequest(url: String): String {
+//        val client = OkHttpClient()
+//        val request = Request.Builder().url(url).build()
+//        val response = client.newCall(request).execute()
+//        return response.body?.string() ?: ""
+//    }
+
+    // Function to make the API request
     private fun makeApiRequest(url: String): String {
         val client = OkHttpClient()
-        val request = Request.Builder().url(url).build()
-        val response = client.newCall(request).execute()
-        return response.body?.string() ?: ""
+        val request = Request.Builder()
+            .url(url)
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                throw IOException("Unexpected code $response")
+            }
+            return response.body!!.string()
+        }
     }
 
     private fun addTextViewToContainer(text: String) {

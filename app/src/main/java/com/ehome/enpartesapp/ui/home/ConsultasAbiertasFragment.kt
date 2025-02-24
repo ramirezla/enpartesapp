@@ -6,10 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ehome.enpartesapp.R
@@ -20,14 +18,21 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-//TODO: Arreglar la vista
+//private const val BASE_URL = "http://192.168.1.127/" // ip URL desde eHome ethernet
+private const val BASE_URL = "http://192.168.1.143/" // ip URL desde eHome 5.0 wifi
+//private const val BASE_URL = "http://192.168.0.100/" // ip URL desde olax ethernet
+
+private const val PATH = "integracion"
+private const val ACTIONFINDVEHICLE = "FINDVEHICLE"
+private const val ACCESS_CODE = "123456"
+private const val C_KEY = "12345"
+
 data class VehicleData(
     val datos: VehicleInfo?,
     val carac: List<VehicleCarac>?
@@ -52,18 +57,29 @@ data class VehicleCarac(
 
 // API interface
 interface ApiService {
-    @GET("/integracion")
+    //@GET("/integracion")
+    @GET("/$PATH")
     suspend fun findVehicle(
         @Query("q") query: String
     ): Response<Map<String, VehicleData>> // Changed return type to Map<String, VehicleData>
 }
 
+private fun buildVehiculoQuery(licensePlate: String, serialNumber: String): String {
+    val jsonQuery = """
+        {
+            "action": "$ACTIONFINDVEHICLE",
+            "accessCode": "$ACCESS_CODE",
+            "cKey": "$C_KEY",
+            "licensePlate": "$licensePlate",
+            "serialNumber": "$serialNumber"
+        }
+    """.trimIndent()
+
+    return jsonQuery
+}
+
 // Retrofit client
 object RetrofitClient {
-    //private const val BASE_URL = "http://192.168.1.127/" // ip URL desde eHome ethernet
-    //private const val BASE_URL = "http://192.168.1.143/" // ip URL desde eHome 5.0 wifi
-    private const val BASE_URL = "http://192.168.0.100/" // ip URL desde olax ethernet
-    //private const val BASE_URL = "http://192.168.220.219/" // ip URL desde pdvsa AIT_OriNor wifi
 
     val instance: ApiService by lazy {
         val retrofit = Retrofit.Builder()
@@ -78,9 +94,6 @@ object RetrofitClient {
 class ConsultasAbiertasFragment : Fragment() {
 
     private var _binding: FragmentConsultasabiertasBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     private lateinit var licensePlateInputLayout: TextInputLayout
@@ -116,7 +129,6 @@ class ConsultasAbiertasFragment : Fragment() {
         searchButton.setOnClickListener {
             searchVehicle()
         }
-
         return root
     }
 
@@ -157,7 +169,8 @@ class ConsultasAbiertasFragment : Fragment() {
         }
 
         // Prepare the query
-        val query = "{\"action\":\"FINDVEHICLE\",\"accessCode\":\"123456\",\"cKey\":\"12345\",\"licensePlate\":\"$licensePlate\",\"serialNumber\":\"$licensePlate\"}"
+        //val query = "{\"action\":\"$ACTIONFINDVEHICLE\",\"accessCode\":\"$ACCESS_CODE\",\"cKey\":\"$C_KEY\",\"licensePlate\":\"$licensePlate\",\"serialNumber\":\"$licensePlate\"}"
+        val query = buildVehiculoQuery(licensePlate, licensePlate)
 
         // Guardar la consulta
         savedQuery = licensePlate // Guardar solo el texto ingresado
@@ -195,7 +208,7 @@ class ConsultasAbiertasFragment : Fragment() {
     private fun displayVehicleData(vehicleResponse: Map<String, VehicleData>) {
         resultTextView.visibility = View.GONE
         // Define the list of characteristics you want to display
-        val caracteristicasMostrar = listOf("Clase", "cylinder", "Categoría", "liters", "Carrocería", "transmission/Transmisión", "Transmisión/Tracción", "Tipo de Carrocería")
+        //val caracteristicasMostrar = listOf("Clase", "cylinder", "Categoría", "liters", "Carrocería", "transmission/Transmisión", "Transmisión/Tracción", "Tipo de Carrocería")
         val caracteristicasNombres = listOf("Clase", "Cilindro", "Categoría", "Litros", "Carrocería", "Caja/Transmisión", "Transmisión/Tracción", "Tipo de Carrocería")
 
         val vehicleList = mutableListOf<VehicleData>()
