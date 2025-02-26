@@ -44,7 +44,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-private const val BASE_URL = "http://209.126.106.199/"  // URL de la API de sulmovsa
+// URL de la API de sulmovsa
+private const val BASE_URL = "http://209.126.106.199/"
 
 //Esta API permite consultar información relacionada con los siniestros almacenados en la
 //base de datos. Puedes buscar registros utilizando case_number o case_token.
