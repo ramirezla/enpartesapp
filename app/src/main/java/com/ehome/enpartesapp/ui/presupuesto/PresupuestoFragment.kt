@@ -52,6 +52,13 @@ import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import android.Manifest
 
+private const val BASE_URL = "http://209.126.106.199/"  // URL de la API de sulmovsa
+
+//El endpoint SubmitCase permite enviar los datos de un siniestro a un servicio externo
+//utilizando un token de acceso. Este endpoint se comunica con un servicio MotionCloud
+//para autenticar y procesar los datos del caso.
+private const val API_submit_case = "/solmovsa/ApiGestorSiniestros/api/MotionsCloud/submit-case"
+
 // Creamos un modelo de datos para representar cada línea de fotos.
 data class FotoItem(
     var imagenUri: Uri? = null, // URI de la imagen (tomada o subida)
@@ -464,7 +471,10 @@ class PresupuestoFragment : Fragment() {
         val jsonString = jsonObject.toString()
 
         // URL de la API
-        val url = "http://209.126.106.199/solmovsa/ApiGestorSiniestros/api/MotionsCloud/submit-case"
+        //val url = "http://209.126.106.199/solmovsa/ApiGestorSiniestros/api/MotionsCloud/submit-case"
+//        private const val BASE_URL = "http://209.126.106.199/"  // URL de la API de sulmovsa
+//        private const val API_submit_case = "/solmovsa/ApiGestorSiniestros/api/MotionsCloud/submit-case"
+        val url = "$BASE_URL$API_submit_case"
 
         // Crear el cliente OkHttp
         val client = OkHttpClient()
@@ -708,8 +718,12 @@ class PresupuestoFragment : Fragment() {
             .build()
 
         // Crear la solicitud
+//        val request = Request.Builder()
+//            .url("http://209.126.106.199/solmovsa/ApiGestorSiniestros/api/MotionsCloud/upload_photos?token=$caseToken")
+//            .post(body)
+//            .build()
         val request = Request.Builder()
-            .url("http://209.126.106.199/solmovsa/ApiGestorSiniestros/api/MotionsCloud/upload_photos?token=$caseToken")
+            .url("""${BASE_URL}solmovsa/ApiGestorSiniestros/api/MotionsCloud/upload_photos?token=$caseToken""")
             .post(body)
             .build()
 

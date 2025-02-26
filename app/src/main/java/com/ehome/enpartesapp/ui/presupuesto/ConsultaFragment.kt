@@ -44,6 +44,17 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+private const val BASE_URL = "http://209.126.106.199/"  // URL de la API de sulmovsa
+
+//Esta API permite consultar información relacionada con los siniestros almacenados en la
+//base de datos. Puedes buscar registros utilizando case_number o case_token.
+private const val API_webhook_query = "solmovsa/ApiGestorSiniestros/api/Webhook/webhook-query"
+
+//El endpoint GeneratePdf permite generar un documento PDF a partir de un conjunto de
+//datos relacionados con un caso específico proporcionado a través de case_number o
+//case_token.
+private const val API_generate_pdf = "solmovsa/ApiGestorSiniestros/api/Webhook/generate-pdf"
+
 class ConsultaFragment : Fragment() {
 
     private val requestCodePermissions = 101 // Código para identificar la solicitud de permisos.
@@ -118,7 +129,8 @@ class ConsultaFragment : Fragment() {
         }
 
         val jsonString = jsonObject.toString()
-        val url = "http://209.126.106.199/solmovsa/ApiGestorSiniestros/api/Webhook/webhook-query"
+        //val url = "http://209.126.106.199/solmovsa/ApiGestorSiniestros/api/Webhook/webhook-query"
+        val url = "$BASE_URL$API_webhook_query"
 
         val client = OkHttpClient()
         val mediaType = "application/json".toMediaType()
@@ -337,7 +349,8 @@ class ConsultaFragment : Fragment() {
         }
 
         val jsonString = jsonObject.toString()
-        val url = "http://209.126.106.199/solmovsa/ApiGestorSiniestros/api/Webhook/generate-pdf"
+        //val url = "http://209.126.106.199/solmovsa/ApiGestorSiniestros/api/Webhook/generate-pdf"
+        val url = "$BASE_URL$API_generate_pdf"
 
         val client = OkHttpClient()
         val mediaType = "application/json".toMediaType()

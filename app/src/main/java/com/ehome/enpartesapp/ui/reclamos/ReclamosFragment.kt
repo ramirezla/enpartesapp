@@ -27,7 +27,8 @@ import okhttp3.Request
 import java.io.IOException
 
 //private const val BASE_URL = "http://192.168.0.100/" // ip URL desde olax ethernet
- private const val BASE_URL = "http://192.168.1.143/"  // ip desde eHome wifi
+private const val BASE_URL = "http://192.168.1.143/"  // ip desde eHome wifi
+//private const val BASE_URL = "http://192.168.1.127/" // ip URL desde eHome ethernet
 private const val PATH = "integracion"
 private const val ACTIONGETVEHICLECLAIMS = "GETVEHICLECLAIMS"
 private const val ACTIONGETPARTSCLAIM = "GETPARTSCLAIM"
@@ -212,14 +213,6 @@ class ReclamosFragment : Fragment() {
         builder.setPositiveButton(getString(R.string.ok_texto)) { dialog, _ -> dialog.dismiss() }
         builder.create().show()
     }
-
-    // Function to make API request
-//    private fun makeApiRequest(url: String): String {
-//        val client = OkHttpClient()
-//        val request = Request.Builder().url(url).build()
-//        val response = client.newCall(request).execute()
-//        return response.body?.string() ?: ""
-//    }
 
     // Function to make the API request
     private fun makeApiRequest(url: String): String {
