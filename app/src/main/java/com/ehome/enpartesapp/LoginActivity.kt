@@ -111,7 +111,9 @@ class LoginActivity : AppCompatActivity() {
     // Crea el servicio para preguntar a integracion
     object RetrofitClient {
         //private const val BASE_URL = "http://192.168.1.127/" // ip URL desde eHome ethernet
-        private const val BASE_URL = "http://192.168.1.143/" // ip URL desde eHome wifi
+        //private const val BASE_URL = "http://192.168.1.143/" // ip URL desde eHome wifi eHome5.0
+        //private const val BASE_URL = "http://192.168.1.117/" // ip URL desde eHome wifi eHome5.0
+        private const val BASE_URL = "https://www.google.com/" // ip URL desde eHome wifi eHome5.0
         //private const val BASE_URL = "http://192.168.0.100/" // ip URL desde olax ethernet
 
         val instance: ApiService by lazy {
@@ -147,40 +149,60 @@ class LoginActivity : AppCompatActivity() {
         call.enqueue(object : Callback<AuthResponse> {
             override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
                 binding.loginProgressBar.visibility = View.GONE
-                if (response.isSuccessful) {
-                    val authResponse = response.body()
-                    // Thread.sleep(3000) // Sleep for 3 seconds (for testing only)
-                    if (authResponse != null) {
-                        // Handle the successful response using a when statement
-                        when (authResponse.code) {
-                            "200" -> {
-                                // Handle code 200 (success)
-                                // Log.d("API Response", "Code 200: ${authResponse.msg}")
-                                // Toast.makeText(this@LoginActivity, "Success: ${authResponse.msg}", Toast.LENGTH_LONG).show()
-                                // Navigate to MainActivity
-                                val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                                val bundle = Bundle()
-                                bundle.putString("username", accessCode)
-                                bundle.putString("userpassword", cKey)
-                                intent.putExtras(bundle)
-                                startActivity(intent)
-                                finish() // Close LoginActivity
-                            }
 
-                            else -> {
-                                // Handle other codes or unknown codes
-                                Log.e(getString(R.string.api_response), "Code: ${authResponse.code}, Message: ${authResponse.msg}")
-                                // Show error dialog
-                                showErrorDialog(authResponse.code, authResponse.msg)
-                            }
-                        }
-                    }
-                } else {
-                    // Handle the error response
-                    Log.e(getString(R.string.api_error), "Code: ${response.code()}, Message: ${response.message()}")
-                    // Show error dialog
-                    showErrorDialog(response.code().toString(), response.message())
-                }
+                // Temporal sin validar el login
+                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                val bundle = Bundle()
+                bundle.putString("username", accessCode)
+                bundle.putString("userpassword", cKey)
+                intent.putExtras(bundle)
+                startActivity(intent)
+                finish() // Close LoginActivity
+                // Temporal sin validar el login
+
+//                if (response.isSuccessful) {
+//                    val authResponse = response.body()
+//                    // Thread.sleep(3000) // Sleep for 3 seconds (for testing only)
+//                    if (authResponse != null) {
+//                        // Handle the successful response using a when statement
+//                        when (authResponse.code) {
+//                            "200" -> {
+//                                // Handle code 200 (success)
+//                                // Log.d("API Response", "Code 200: ${authResponse.msg}")
+//                                // Toast.makeText(this@LoginActivity, "Success: ${authResponse.msg}", Toast.LENGTH_LONG).show()
+//                                // Navigate to MainActivity
+//                                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+//                                val bundle = Bundle()
+//                                bundle.putString("username", accessCode)
+//                                bundle.putString("userpassword", cKey)
+//                                intent.putExtras(bundle)
+//                                startActivity(intent)
+//                                finish() // Close LoginActivity
+//                            }
+//
+//                            else -> {
+//                                // Handle other codes or unknown codes
+//                                Log.e(getString(R.string.api_response), "Code: ${authResponse.code}, Message: ${authResponse.msg}")
+//                                // Show error dialog
+//                                showErrorDialog(authResponse.code, authResponse.msg)
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    // Temporal sin validar el login
+//                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
+//                    val bundle = Bundle()
+//                    bundle.putString("username", accessCode)
+//                    bundle.putString("userpassword", cKey)
+//                    intent.putExtras(bundle)
+//                    startActivity(intent)
+//                    finish() // Close LoginActivity
+//                    // Temporal sin validar el login
+//                    // Handle the error response
+//                    Log.e(getString(R.string.api_error), "Code: ${response.code()}, Message: ${response.message()}")
+//                    // Show error dialog
+//                    showErrorDialog(response.code().toString(), response.message())
+//                }
             }
 
             override fun onFailure(call: Call<AuthResponse>, t: Throwable) {

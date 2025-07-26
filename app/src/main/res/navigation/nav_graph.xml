@@ -3,17 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/nav_consultas_abiertas_2">
-
-    <fragment
-        android:id="@+id/nav_consultas_abiertas_2"
-        android:name="com.ehome.enpartesapp.ui.home.ConsultasAbiertasFragment"
-        android:label="@string/menu_consultas_abiertas"
-        tools:layout="@layout/fragment_consultasabiertas" >
-        <action
-            android:id="@+id/action_nav_consultas_abiertas_to_nav_presupuestofragment"
-            app:destination="@id/nav_presupuestofragment" />
-    </fragment>
+    app:startDestination="@id/nav_presupuestofragment">
 
     <fragment
         android:id="@+id/nav_presupuestofragment"
@@ -22,18 +12,23 @@
         tools:layout="@layout/fragment_presupuesto" >
 
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/nav_secondfragment" />
+            android:id="@+id/action_nav_presupuestofragment_to_reportDisplayFragment"
+            app:destination="@id/reportDisplayFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/nav_secondfragment"
-        android:name="com.ehome.enpartesapp.ui.presupuesto.SecondFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second" >
-
+        android:id="@+id/reportDisplayFragment"
+        android:name="com.ehome.enpartesapp.ui.presupuesto.ReportDisplayFragment"
+        android:label="fragment_report_display"
+        tools:layout="@layout/fragment_report_display" >
+        <argument
+            android:name="input_data"
+            app:argType="string" />
+        <argument
+            android:name="api_response"
+            app:argType="string" />
         <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
+            android:id="@+id/action_reportDisplayFragment_to_presupuestofragment"
             app:destination="@id/nav_presupuestofragment" />
     </fragment>
 </navigation>

@@ -42,4 +42,6 @@
     <color name="blue_pressed">#1976D2</color>
     <color name="my_high_contrast_text_color">#FF000000</color> <!-- Black -->
     <color name="my_high_contrast_background_color">#FFFFFFFF</color> <!-- White -->
+    <color name="my_low_contrast_text_color">#FF000000</color> <!-- Black -->
+    <color name="my_low_contrast_background_color">#FFFFFFFF</color> <!-- White -->
 </resources>
